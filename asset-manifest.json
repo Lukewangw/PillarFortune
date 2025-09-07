@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/Lukewangw/PillarFortune.git/static/css/main.1e603cb5.css",
-    "main.js": "/Lukewangw/PillarFortune.git/static/js/main.ccf61893.js",
-    "index.html": "/Lukewangw/PillarFortune.git/index.html",
-    "main.1e603cb5.css.map": "/Lukewangw/PillarFortune.git/static/css/main.1e603cb5.css.map",
-    "main.ccf61893.js.map": "/Lukewangw/PillarFortune.git/static/js/main.ccf61893.js.map"
+    "main.css": "/Lukewangw/PillarFortune/static/css/main.1e603cb5.css",
+    "main.js": "/Lukewangw/PillarFortune/static/js/main.ccf61893.js",
+    "index.html": "/Lukewangw/PillarFortune/index.html",
+    "main.1e603cb5.css.map": "/Lukewangw/PillarFortune/static/css/main.1e603cb5.css.map",
+    "main.ccf61893.js.map": "/Lukewangw/PillarFortune/static/js/main.ccf61893.js.map"
   },
   "entrypoints": [
     "static/css/main.1e603cb5.css",
