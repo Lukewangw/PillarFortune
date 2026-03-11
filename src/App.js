@@ -7,6 +7,7 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react";
+import TarotReadingSection from "./components/tarot/TarotReadingSection";
 
 const MysticFortune = () => {
   const [activeTab, setActiveTab] = useState("fourPillars");
@@ -923,12 +924,8 @@ const MysticFortune = () => {
               {showResults && <ResultsSection />}
             </>
           ) : (
-            <div className="text-center py-20">
-              <div className="text-6xl mb-4">🔮</div>
-              <h3 className="text-2xl text-amber-400 mb-4">Tarot Reading</h3>
-              <p className="text-gray-400">
-                Coming soon... The cards are being shuffled by cosmic forces.
-              </p>
+            <div className="max-w-4xl mx-auto">
+              <TarotReadingSection />
             </div>
           )}
         </div>
