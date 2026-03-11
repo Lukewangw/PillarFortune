@@ -181,10 +181,21 @@ Example request:
 }
 ```
 
-## Deployment notes
-- Build frontend: `npm run build`
-- Deploy worker + assets: `npm run deploy`
-- For Cloudflare Pages + Worker split deployment, point frontend to deployed worker URL via `REACT_APP_API_BASE_URL`.
+## Deployment
+
+See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for the full step-by-step deployment guide, including first-time infrastructure setup and how to deploy the newest version.
+
+**Quick summary:**
+
+```bash
+# First-time only: create and migrate the D1 database
+npx wrangler d1 create cf-ai-pillarfortune-db
+# (paste returned database_id into wrangler.jsonc)
+npx wrangler d1 migrations apply cf-ai-pillarfortune-db --remote
+
+# Every deployment (initial + updates)
+npm run deploy
+```
 
 ## Future improvements
 - Native Cloudflare Workflow binding for long-running generation chains.
