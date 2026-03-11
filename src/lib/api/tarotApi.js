@@ -1,4 +1,4 @@
-const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8787";
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "";
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_BASE}${path}`, {
