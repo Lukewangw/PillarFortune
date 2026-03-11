@@ -5,7 +5,6 @@ import {
   MapPin,
   User,
   LogOut,
-  Star,
   Sparkles,
 } from "lucide-react";
 
@@ -26,13 +25,6 @@ const MysticFortune = () => {
     gender: "",
     birthCity: "",
     currentCity: "",
-  });
-
-  const [authData, setAuthData] = useState({
-    email: "",
-    password: "",
-    name: "",
-    confirmPassword: "",
   });
 
   const [baziChart, setBaziChart] = useState(null);
@@ -270,26 +262,6 @@ const MysticFortune = () => {
       },
       dayMaster: heavenlyStems[(day + 5) % 10],
     };
-  };
-
-  const handleLogin = () => {
-    if (authData.email && authData.password) {
-      setCurrentUser({ email: authData.email, name: authData.name || "User" });
-      setIsAuthenticated(true);
-      setShowAuthModal(false);
-    }
-  };
-
-  const handleRegister = () => {
-    if (
-      authData.email &&
-      authData.password &&
-      authData.password === authData.confirmPassword
-    ) {
-      setCurrentUser({ email: authData.email, name: authData.name });
-      setIsAuthenticated(true);
-      setShowAuthModal(false);
-    }
   };
 
   const handleGuestLogin = () => {
