@@ -5,7 +5,20 @@ import { saveMessage, saveReading } from "./utils/db";
 import { validateFollowUpInput, validateReadingInput } from "./utils/validation";
 
 function jsonError(message: string, status = 400) {
-  return Response.json({ error: message }, { status });
+  return withCors(Response.json({ error: message }, { status }));
+}
+
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+function withCors(response: Response) {
+  const headers = new Headers(response.headers);
+  Object.entries(CORS_HEADERS).forEach(([key, value]) => headers.set(key, value));
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
 function id(prefix: string) {
@@ -20,6 +33,10 @@ async function getSessionStub(env: any, sessionId: string) {
 const worker = {
   async fetch(request: Request, env: any): Promise<Response> {
     const url = new URL(request.url);
+
+    if (request.method === "OPTIONS") {
+      return withCors(new Response(null, { status: 204 }));
+    }
 
     try {
       if (request.method === "POST" && url.pathname === "/api/tarot/reading") {
@@ -48,7 +65,7 @@ const worker = {
           }),
         });
 
-        return Response.json({
+        return withCors(Response.json({
           readingId,
           sessionId,
           spreadType: body.spreadType,
@@ -57,7 +74,7 @@ const worker = {
           cards,
           interpretation,
           chatHistory: [{ role: "assistant", content: interpretation.summary }],
-        });
+        }));
       }
 
       if (request.method === "POST" && url.pathname === "/api/tarot/follow-up") {
@@ -86,7 +103,7 @@ const worker = {
           saveMessage(env, body.sessionId, "assistant", reply),
         ]);
 
-        return Response.json({ reply, sessionId: body.sessionId, history: updated.history || [] });
+        return withCors(Response.json({ reply, sessionId: body.sessionId, history: updated.history || [] }));
       }
 
       if (request.method === "GET" && url.pathname === "/api/tarot/history") {
@@ -99,7 +116,7 @@ const worker = {
         )
           .bind(userId)
           .all();
-        return Response.json({ readings: results });
+        return withCors(Response.json({ readings: results }));
       }
 
       if (request.method === "GET" && url.pathname.startsWith("/api/tarot/reading/")) {
@@ -111,10 +128,10 @@ const worker = {
           .first();
 
         if (!reading) return jsonError("Reading not found.", 404);
-        return Response.json(reading);
+        return withCors(Response.json(reading));
       }
 
-      return new Response("Not found", { status: 404 });
+      return withCors(new Response("Not found", { status: 404 }));
     } catch (error: any) {
       return jsonError(error.message || "Unhandled server error", 500);
     }
