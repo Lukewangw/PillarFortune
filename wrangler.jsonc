@@ -29,8 +29,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "pillarfortune",
-      "database_id": "7a8c54f0-012c-494e-8f94-e27a05122c09",
+      "database_name": "cf-ai-pillarfortune-db",
+      "database_id": "f4a7d315-4404-4f66-a5ae-9872b7277ba7",
       "migrations_dir": "worker/migrations"
     }
   ]
