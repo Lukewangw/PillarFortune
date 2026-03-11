@@ -23,9 +23,7 @@
     "deploy": "npm run build && wrangler deploy",
     "preview": "npm run build && wrangler dev",
     "worker:dev": "wrangler dev",
-    "worker:deploy": "wrangler deploy",
-    "build:cf": "PUBLIC_URL=/ react-scripts build",
-    "build:gh": "PUBLIC_URL=/PillarFortune react-scripts build"
+    "worker:deploy": "wrangler deploy"
   },
   "eslintConfig": {
     "extends": [
