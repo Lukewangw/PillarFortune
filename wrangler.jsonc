@@ -1,14 +1,37 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "pillarfortune",
+  "name": "cf_ai_pillarfortune",
+  "main": "worker/src/index.ts",
   "compatibility_date": "2025-09-27",
-  "observability": {
-    "enabled": true
-  },
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
   "assets": {
-    "directory": "build"
+    "directory": "build",
+    "not_found_handling": "single-page-application"
   },
-  "compatibility_flags": [
-    "nodejs_compat"
+  "ai": {
+    "binding": "AI"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "TAROT_SESSION",
+        "class_name": "TarotSession"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["TarotSession"]
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cf-ai-pillarfortune-db",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "worker/migrations"
+    }
   ]
 }

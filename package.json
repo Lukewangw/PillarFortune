@@ -1,8 +1,8 @@
 {
-  "name": "mystic-fortune-bazi",
+  "name": "cf_ai_pillarfortune",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://lukewangw.github.io/PillarFortune/",
+  "homepage": ".",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.8.0",
@@ -21,7 +21,11 @@
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "npm run build && wrangler deploy",
-    "preview": "npm run build && wrangler dev"
+    "preview": "npm run build && wrangler dev",
+    "worker:dev": "wrangler dev",
+    "worker:deploy": "wrangler deploy",
+    "build:cf": "PUBLIC_URL=/ react-scripts build",
+    "build:gh": "PUBLIC_URL=/PillarFortune react-scripts build"
   },
   "eslintConfig": {
     "extends": [
