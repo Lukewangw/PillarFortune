@@ -1,70 +1,196 @@
-# Getting Started with Create React App
+# cf_ai_pillarfortune
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Project name
+**cf_ai_pillarfortune** (Cloudflare-native evolution of PillarFortune).
 
-## Available Scripts
+## Overview
+cf_ai_pillarfortune is a tarot-first guidance app that combines deterministic card drawing with grounded LLM interpretation. The frontend is chat-first and optimized for Cloudflare Pages compatibility, while the backend is a Cloudflare Worker using Workers AI (Llama 3.3), Durable Objects for session memory, and D1 for persistent reading history.
 
-In the project directory, you can run:
+## Why this project fits the Cloudflare AI app pattern
+- AI inference runs on **Workers AI**.
+- Stateful multi-turn context runs in a **Durable Object per session**.
+- Persistent data is stored in **D1**.
+- Orchestration is separated into workflow-style backend steps.
+- Frontend and backend are cleanly split for Pages + Worker deployment.
 
-### `npm start`
+## Features
+- Tarot reading flow:
+  1. choose spread
+  2. ask question
+  3. draw deterministic cards
+  4. receive structured interpretation JSON
+  5. ask follow-up session chat questions
+  6. fetch saved history
+- Supported spreads:
+  - single-card
+  - three-card
+  - five-card-cross
+- Session memory backed by Durable Objects.
+- Reading + message persistence in D1.
+- Worker API layer and frontend API client abstraction.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Architecture
+- **Frontend (CRA, React)**: `src/components/tarot/*`
+- **API client**: `src/lib/api/tarotApi.js`
+- **Worker API**: `worker/src/index.ts`
+- **Tarot deterministic engine**: `worker/src/tarot/engine.ts`
+- **Workers AI prompts/parsing**: `worker/src/tarot/ai.ts`
+- **Durable Object session state**: `worker/src/durable-objects/TarotSession.ts`
+- **Workflow step function**: `worker/src/workflows/readingWorkflow.ts`
+- **D1 migrations**: `worker/migrations/*`
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Tech stack
+- React + Tailwind (frontend)
+- Cloudflare Workers (TypeScript)
+- Workers AI `@cf/meta/llama-3.3-70b-instruct-fp8-fast`
+- Durable Objects
+- D1 (SQLite)
+- Wrangler
 
-### `npm test`
+## Repository structure
+```txt
+README.md
+PROMPTS.md
+src/
+  components/tarot/
+  lib/api/
+worker/
+  src/
+    durable-objects/
+    tarot/
+    workflows/
+    utils/
+  migrations/
+shared/types/
+wrangler.jsonc
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Local development instructions
+### 1) Install dependencies
+```bash
+npm install
+```
 
-### `npm run build`
+### 2) Run frontend
+```bash
+npm start
+```
+Frontend default: `http://localhost:3000`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 3) Create D1 database
+```bash
+npx wrangler d1 create cf-ai-pillarfortune-db
+```
+Copy returned `database_id` into `wrangler.jsonc`.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 4) Apply migrations
+```bash
+npx wrangler d1 migrations apply cf-ai-pillarfortune-db --local
+npx wrangler d1 migrations apply cf-ai-pillarfortune-db --remote
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 5) Run Worker backend locally
+```bash
+npx wrangler dev
+```
+Worker default: `http://127.0.0.1:8787`
 
-### `npm run eject`
+### 6) Connect frontend to local worker
+Create `.env.local`:
+```bash
+REACT_APP_API_BASE_URL=http://127.0.0.1:8787
+```
+Restart frontend after changing env vars.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Environment variables / bindings required
+Configured in `wrangler.jsonc`:
+- `AI` (Workers AI binding)
+- `DB` (D1 binding)
+- `TAROT_SESSION` (Durable Object binding)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Optional future bindings:
+- `VECTORIZE` (semantic memory)
+- Realtime binding/tooling for voice session transport
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## How to run the frontend
+```bash
+npm start
+```
+Open `http://localhost:3000`, go to **Tarot Reading** tab.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## How to run the Worker backend
+```bash
+npx wrangler dev
+```
 
-## Learn More
+## How to create/apply D1 migrations
+```bash
+npx wrangler d1 migrations create cf-ai-pillarfortune-db add_tarot_tables
+npx wrangler d1 migrations apply cf-ai-pillarfortune-db --local
+npx wrangler d1 migrations apply cf-ai-pillarfortune-db --remote
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## How Durable Objects are used
+- One `TarotSession` DO per `sessionId`.
+- Stores active reading context (question + cards + spread).
+- Stores recent chat turns for follow-up grounding.
+- Exposes `/initialize`, `/message`, and `/state` internal methods.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## How Workflows are used
+`worker/src/workflows/readingWorkflow.ts` models reading generation in durable steps:
+1. validate input
+2. draw cards deterministically
+3. call Workers AI for structured interpretation
+4. persist reading
+5. return assembled payload
 
-### Code Splitting
+Current implementation runs these steps directly through the API route to keep dev fast; this can be moved to explicit Cloudflare Workflows binding later with minimal code movement.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## How Workers AI with Llama 3.3 is used
+- Model: `@cf/meta/llama-3.3-70b-instruct-fp8-fast`
+- Used for:
+  - initial interpretation JSON
+  - follow-up grounded chat reply
+- Prompt constraints enforce:
+  - only drawn cards + positions
+  - no unseen card invention
+  - reflective, practical, non-alarmist tone
+  - no high-certainty medical/legal/financial guidance
 
-### Analyzing the Bundle Size
+## How to test the tarot reading flow
+1. Start frontend + worker.
+2. Enter a question and choose spread.
+3. Click **Draw Cards**.
+4. Verify cards and interpretation render.
+5. Ask follow-up question in chat panel.
+6. Click **Refresh** in history panel and verify persisted readings.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## API endpoints overview
+- `POST /api/tarot/reading`
+- `POST /api/tarot/follow-up`
+- `GET /api/tarot/history?userId=...`
+- `GET /api/tarot/reading/:id`
 
-### Making a Progressive Web App
+Example request:
+```json
+{
+  "question": "What should I focus on in my career this month?",
+  "focusArea": "career",
+  "spreadType": "three-card",
+  "userId": "optional-user-id"
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Deployment notes
+- Build frontend: `npm run build`
+- Deploy worker + assets: `npm run deploy`
+- For Cloudflare Pages + Worker split deployment, point frontend to deployed worker URL via `REACT_APP_API_BASE_URL`.
 
-### Advanced Configuration
+## Future improvements
+- Native Cloudflare Workflow binding for long-running generation chains.
+- Vectorize memory retrieval augmentation.
+- Realtime voice integration using the same follow-up session orchestration.
+- Auth + user ownership constraints for history endpoints.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Deployed link
+- _Add deployed URL here after launch._

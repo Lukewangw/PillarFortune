@@ -1,5 +1,5 @@
 {
-  "name": "mystic-fortune-bazi",
+  "name": "cf_ai_pillarfortune",
   "version": "0.1.0",
   "private": true,
   "homepage": "https://lukewangw.github.io/PillarFortune/",
@@ -21,7 +21,9 @@
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "npm run build && wrangler deploy",
-    "preview": "npm run build && wrangler dev"
+    "preview": "npm run build && wrangler dev",
+    "worker:dev": "wrangler dev",
+    "worker:deploy": "wrangler deploy"
   },
   "eslintConfig": {
     "extends": [
