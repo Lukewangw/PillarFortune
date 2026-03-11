@@ -75,7 +75,9 @@ describe("TarotReadingSection", () => {
       );
     });
 
-    expect(await screen.findByText("The Hermit")).toBeInTheDocument();
+    const revealButtons = await screen.findAllByRole("button", { name: /reveal this card/i });
+    fireEvent.click(revealButtons[0]);
+    expect((await screen.findAllByText("The Hermit")).length).toBeGreaterThan(0);
     expect(screen.getByText("Stay consistent.")).toBeInTheDocument();
     expect(await screen.findByText("Past question")).toBeInTheDocument();
   });
@@ -98,7 +100,9 @@ describe("TarotReadingSection", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /draw cards/i }));
 
-    await screen.findByText("The Hermit");
+    const revealButtons = await screen.findAllByRole("button", { name: /reveal this card/i });
+    fireEvent.click(revealButtons[0]);
+    expect((await screen.findAllByText("The Hermit")).length).toBeGreaterThan(0);
 
     fireEvent.change(screen.getByPlaceholderText(/ask a follow-up/i), {
       target: { value: "Why does The Hermit matter?" },
@@ -114,5 +118,39 @@ describe("TarotReadingSection", () => {
     });
 
     expect(await screen.findByText(/It points to pausing before major decisions\./)).toBeInTheDocument();
+  });
+
+  it("shows shuffling feedback while drawing", async () => {
+    tarotApi.createReading.mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve(readingResponse), 20))
+    );
+
+    render(<TarotReadingSection />);
+
+    fireEvent.change(screen.getByPlaceholderText(/what should i focus/i), {
+      target: { value: "What should I focus on?" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /draw cards/i }));
+
+    expect(screen.getByText(/shuffling the deck/i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.queryByText(/shuffling the deck/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it("falls back to a local reading when the API draw fails", async () => {
+    tarotApi.createReading.mockRejectedValue(new Error("Failed to fetch"));
+
+    render(<TarotReadingSection />);
+
+    fireEvent.change(screen.getByPlaceholderText(/what should i focus/i), {
+      target: { value: "What should I focus on?" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /draw cards/i }));
+
+    expect(await screen.findByText(/local traditional fallback spread/i)).toBeInTheDocument();
+    const revealButtons = await screen.findAllByRole("button", { name: /reveal this card/i });
+    expect(revealButtons.length).toBeGreaterThan(0);
   });
 });
