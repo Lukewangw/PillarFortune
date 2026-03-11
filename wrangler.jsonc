@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "cf_ai_pillarfortune",
+  "name": "pillarfortune",
   "main": "worker/src/index.ts",
   "compatibility_date": "2025-09-27",
   "compatibility_flags": ["nodejs_compat"],
@@ -30,7 +30,7 @@
     {
       "binding": "DB",
       "database_name": "cf-ai-pillarfortune-db",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "database_id": "f4a7d315-4404-4f66-a5ae-9872b7277ba7",
       "migrations_dir": "worker/migrations"
     }
   ]

@@ -77,8 +77,6 @@ npm start
 ```
 Frontend default: `http://localhost:3000`
 
-When targeting a specific deploy path, you can override asset base via `PUBLIC_URL` during build.
-
 ### 3) Create D1 database
 ```bash
 npx wrangler d1 create cf-ai-pillarfortune-db
@@ -184,9 +182,8 @@ Example request:
 ```
 
 ## Deployment notes
-- Build frontend for Cloudflare root path: `npm run build` (or `npm run build:cf`)
-- Build frontend for GitHub Pages subpath `/PillarFortune`: `npm run build:gh`
-- Deploy worker + assets to Cloudflare Workers: `npm run deploy`
+- Build frontend: `npm run build`
+- Deploy worker + assets: `npm run deploy`
 - For Cloudflare Pages + Worker split deployment, point frontend to deployed worker URL via `REACT_APP_API_BASE_URL`.
 
 ## Future improvements

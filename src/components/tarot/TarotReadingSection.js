@@ -4,6 +4,10 @@ import { focusAreas, spreads } from "./constants";
 
 const HISTORY_USER = "demo-user";
 
+function GlassInput({ children }) {
+  return <div className="rounded-3xl border border-purple-400/40 bg-slate-900/30 p-4">{children}</div>;
+}
+
 export default function TarotReadingSection() {
   const [question, setQuestion] = useState("");
   const [focusArea, setFocusArea] = useState("general");
@@ -30,13 +34,7 @@ export default function TarotReadingSection() {
     setLoading(true);
     setError("");
     try {
-      const nextReading = await tarotApi.createReading({
-        question,
-        focusArea,
-        spreadType,
-        userId: HISTORY_USER,
-        sessionId: reading?.sessionId,
-      });
+      const nextReading = await tarotApi.createReading({ question, focusArea, spreadType, userId: HISTORY_USER, sessionId: reading?.sessionId });
       setReading({ ...nextReading, chatHistory: nextReading.chatHistory || [] });
       await loadHistory();
     } catch (err) {
@@ -51,11 +49,7 @@ export default function TarotReadingSection() {
     setChatLoading(true);
     setError("");
     try {
-      const data = await tarotApi.followUp({
-        sessionId: reading.sessionId,
-        readingId: reading.readingId,
-        message: followUpMessage,
-      });
+      const data = await tarotApi.followUp({ sessionId: reading.sessionId, readingId: reading.readingId, message: followUpMessage });
       setReading((prev) => ({ ...prev, chatHistory: data.history }));
       setFollowUpMessage("");
     } catch (err) {
@@ -66,80 +60,65 @@ export default function TarotReadingSection() {
   };
 
   return (
-    <section className="animate-fadeIn">
-      <h2 className="text-3xl font-bold text-center mb-6 text-amber-400">Tarot Reading</h2>
+    <section className="mx-auto max-w-6xl space-y-6 animate-fadeIn">
+      <h2 className="text-center text-5xl font-extrabold text-yellow-300">Tarot Reading</h2>
 
-      <div className="grid md:grid-cols-2 gap-4 mb-4">
-        <div className="md:col-span-2">
-          <label className="block text-gray-400 text-sm mb-2 uppercase tracking-wider">Question</label>
-          <input
-            value={question}
-            onChange={(event) => setQuestion(event.target.value)}
-            className="w-full px-5 py-3 rounded-2xl bg-white/5 border border-purple-500/30 text-white placeholder-gray-500 focus:outline-none focus:border-purple-400 transition-all"
-            placeholder="What should I focus on in my career this month?"
-          />
-        </div>
+      <div className="grid gap-5 md:grid-cols-3">
+        <label className="space-y-2 md:col-span-3">
+          <span className="text-lg uppercase tracking-wider text-purple-200/80">Question</span>
+          <GlassInput>
+            <input value={question} onChange={(event) => setQuestion(event.target.value)} className="w-full bg-transparent text-xl text-white outline-none placeholder:text-slate-400" placeholder="What should I focus on in my career this month?" />
+          </GlassInput>
+        </label>
 
-        <div>
-          <label className="block text-gray-400 text-sm mb-2 uppercase tracking-wider">Focus Area</label>
-          <select
-            value={focusArea}
-            onChange={(event) => setFocusArea(event.target.value)}
-            className="w-full px-5 py-3 rounded-2xl bg-white/5 border border-purple-500/30 text-white focus:outline-none focus:border-purple-400 transition-all"
-          >
-            {focusAreas.map((item) => (
-              <option key={item.value} value={item.value} className="bg-slate-900">
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <label className="space-y-2">
+          <span className="text-lg uppercase tracking-wider text-purple-200/80">Focus Area</span>
+          <GlassInput>
+            <select value={focusArea} onChange={(event) => setFocusArea(event.target.value)} className="w-full bg-transparent text-xl text-white outline-none">
+              {focusAreas.map((item) => (
+                <option key={item.value} value={item.value} className="bg-slate-900">{item.label}</option>
+              ))}
+            </select>
+          </GlassInput>
+        </label>
 
-        <div>
-          <label className="block text-gray-400 text-sm mb-2 uppercase tracking-wider">Spread</label>
-          <select
-            value={spreadType}
-            onChange={(event) => setSpreadType(event.target.value)}
-            className="w-full px-5 py-3 rounded-2xl bg-white/5 border border-purple-500/30 text-white focus:outline-none focus:border-purple-400 transition-all"
-          >
-            {spreads.map((item) => (
-              <option key={item.value} value={item.value} className="bg-slate-900">
-                {item.label}
-              </option>
-            ))}
-          </select>
+        <label className="space-y-2">
+          <span className="text-lg uppercase tracking-wider text-purple-200/80">Spread</span>
+          <GlassInput>
+            <select value={spreadType} onChange={(event) => setSpreadType(event.target.value)} className="w-full bg-transparent text-xl text-white outline-none">
+              {spreads.map((item) => (
+                <option key={item.value} value={item.value} className="bg-slate-900">{item.label}</option>
+              ))}
+            </select>
+          </GlassInput>
+        </label>
+
+        <div className="flex items-end">
+          <button onClick={handleDraw} disabled={loading || !question.trim()} className="w-full rounded-full bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 px-8 py-4 text-xl font-semibold disabled:opacity-50">
+            {loading ? "Drawing..." : "Draw Cards"}
+          </button>
         </div>
       </div>
 
-      <div className="text-center mb-4">
-        <button
-          onClick={handleDraw}
-          disabled={loading || !question.trim()}
-          className="px-10 py-3 rounded-full bg-gradient-to-r from-amber-500 via-pink-500 to-purple-500 text-white font-semibold hover:shadow-lg hover:shadow-amber-500/25 transition-all disabled:opacity-50"
-        >
-          {loading ? "Drawing..." : "Draw Cards"}
-        </button>
-      </div>
-
-      <p className="text-center text-sm text-gray-400 mb-4">{selectedSpread?.description}</p>
-      {error && <p className="rounded-xl bg-red-500/20 border border-red-500/30 p-3 text-red-200 text-sm mb-4">{error}</p>}
+      <p className="text-center text-lg text-purple-100/80">{selectedSpread?.description}</p>
+      {error && <p className="rounded-2xl bg-red-900/40 p-4 text-lg text-red-100">{error}</p>}
 
       {reading && (
-        <div className="space-y-4">
-          <div className="grid md:grid-cols-3 gap-3">
+        <>
+          <div className="grid gap-4 md:grid-cols-3">
             {reading.cards.map((card, index) => (
-              <article key={`${card.name}-${index}`} className="rounded-2xl bg-white/5 border border-purple-500/20 p-4">
-                <p className="text-xs uppercase tracking-wider text-pink-300">{card.position}</p>
-                <h3 className="mt-1 text-lg font-semibold text-amber-300">{card.name}</h3>
-                <p className="text-sm text-gray-300">{card.reversed ? "Reversed" : "Upright"}</p>
-                <p className="text-xs text-gray-400 mt-2">{card.keywords?.join(", ")}</p>
+              <article key={`${card.name}-${index}`} className="rounded-3xl border border-purple-400/40 bg-slate-900/30 p-5">
+                <p className="text-sm uppercase tracking-wider text-pink-300">{card.position}</p>
+                <h3 className="mt-2 text-3xl font-bold text-yellow-200">{card.name}</h3>
+                <p className="mt-1 text-purple-100">{card.reversed ? "Reversed" : "Upright"}</p>
+                <p className="mt-3 text-purple-200/90">{card.keywords?.join(", ")}</p>
               </article>
             ))}
           </div>
 
-          <div className="rounded-2xl bg-white/5 border border-purple-500/20 p-4">
-            <h3 className="text-lg font-semibold text-amber-300 mb-2">Interpretation</h3>
-            <div className="space-y-1 text-sm text-gray-300">
+          <div className="rounded-3xl border border-purple-400/40 bg-slate-900/30 p-6">
+            <h3 className="text-3xl font-bold text-yellow-200">Interpretation</h3>
+            <div className="mt-4 space-y-2 text-lg text-purple-100">
               <p><strong>Summary:</strong> {reading.interpretation?.summary}</p>
               {reading.interpretation?.career && <p><strong>Career:</strong> {reading.interpretation.career}</p>}
               {reading.interpretation?.love && <p><strong>Love:</strong> {reading.interpretation.love}</p>}
@@ -148,50 +127,39 @@ export default function TarotReadingSection() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="rounded-2xl bg-white/5 border border-purple-500/20 p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-semibold text-amber-300">Reading History</h3>
-                <button onClick={loadHistory} className="text-xs px-3 py-1 rounded-full bg-white/10 hover:bg-white/20">Refresh</button>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-3xl border border-purple-400/40 bg-slate-900/30 p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-2xl font-bold text-yellow-200">Reading History</h3>
+                <button onClick={loadHistory} className="rounded-full bg-purple-700/80 px-4 py-2">Refresh</button>
               </div>
-              <div className="max-h-36 overflow-y-auto space-y-2">
+              <div className="max-h-64 space-y-2 overflow-y-auto">
                 {history.map((item) => (
-                  <div key={item.id} className="rounded-xl bg-black/20 p-2 text-xs">
+                  <div key={item.id} className="rounded-2xl bg-black/30 p-3 text-sm">
                     <p className="font-semibold text-pink-200">{item.spread_type}</p>
-                    <p className="text-gray-300">{item.question}</p>
+                    <p>{item.question}</p>
                   </div>
                 ))}
-                {history.length === 0 && <p className="text-xs text-gray-400">No saved readings yet.</p>}
+                {history.length === 0 && <p className="text-purple-200/80">No saved readings yet.</p>}
               </div>
             </div>
 
-            <div className="rounded-2xl bg-white/5 border border-purple-500/20 p-4">
-              <h3 className="text-lg font-semibold text-amber-300 mb-2">Follow-up Chat</h3>
-              <div className="max-h-36 overflow-y-auto space-y-2 mb-2">
+            <div className="rounded-3xl border border-purple-400/40 bg-slate-900/30 p-5">
+              <h3 className="text-2xl font-bold text-yellow-200">Follow-up Chat</h3>
+              <div className="my-3 max-h-56 space-y-2 overflow-y-auto">
                 {(reading.chatHistory || []).map((entry, idx) => (
-                  <p key={idx} className="rounded-xl bg-black/20 p-2 text-xs text-gray-300">
+                  <p key={idx} className="rounded-2xl bg-black/30 p-3 text-sm">
                     <strong className="capitalize">{entry.role}:</strong> {entry.content}
                   </p>
                 ))}
               </div>
               <div className="flex gap-2">
-                <input
-                  value={followUpMessage}
-                  onChange={(event) => setFollowUpMessage(event.target.value)}
-                  className="flex-1 px-3 py-2 rounded-xl bg-black/20 border border-purple-500/20 text-sm"
-                  placeholder="Ask a follow-up question..."
-                />
-                <button
-                  onClick={handleFollowUp}
-                  disabled={chatLoading || !followUpMessage.trim()}
-                  className="px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-xs font-semibold disabled:opacity-50"
-                >
-                  {chatLoading ? "Sending..." : "Send"}
-                </button>
+                <input value={followUpMessage} onChange={(event) => setFollowUpMessage(event.target.value)} className="flex-1 rounded-2xl border border-purple-400/40 bg-black/30 p-3" placeholder="Ask a follow-up question..." />
+                <button onClick={handleFollowUp} disabled={chatLoading || !followUpMessage.trim()} className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-5 py-2 font-semibold disabled:opacity-50">{chatLoading ? "Sending..." : "Send"}</button>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </section>
   );
