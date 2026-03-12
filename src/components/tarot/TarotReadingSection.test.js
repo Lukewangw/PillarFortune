@@ -75,8 +75,10 @@ describe("TarotReadingSection", () => {
       );
     });
 
-    const revealButtons = await screen.findAllByRole("button", { name: /reveal this card/i });
-    fireEvent.click(revealButtons[0]);
+    const deckSlots = await screen.findAllByRole("button", { name: /deck slot/i });
+    fireEvent.click(deckSlots[0]);
+    fireEvent.click(deckSlots[1]);
+    fireEvent.click(deckSlots[2]);
     expect((await screen.findAllByText("The Hermit")).length).toBeGreaterThan(0);
     expect(screen.getByText("Stay consistent.")).toBeInTheDocument();
     expect(await screen.findByText("Past question")).toBeInTheDocument();
@@ -100,8 +102,10 @@ describe("TarotReadingSection", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /draw cards/i }));
 
-    const revealButtons = await screen.findAllByRole("button", { name: /reveal this card/i });
-    fireEvent.click(revealButtons[0]);
+    const deckSlots = await screen.findAllByRole("button", { name: /deck slot/i });
+    fireEvent.click(deckSlots[0]);
+    fireEvent.click(deckSlots[1]);
+    fireEvent.click(deckSlots[2]);
     expect((await screen.findAllByText("The Hermit")).length).toBeGreaterThan(0);
 
     fireEvent.change(screen.getByPlaceholderText(/ask a follow-up/i), {
@@ -149,8 +153,8 @@ describe("TarotReadingSection", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /draw cards/i }));
 
-    expect(await screen.findByText(/local traditional fallback spread/i)).toBeInTheDocument();
-    const revealButtons = await screen.findAllByRole("button", { name: /reveal this card/i });
-    expect(revealButtons.length).toBeGreaterThan(0);
+    expect(await screen.findByText(/ceremonial fallback spread/i)).toBeInTheDocument();
+    const deckSlots = await screen.findAllByRole("button", { name: /deck slot/i });
+    expect(deckSlots.length).toBe(20);
   });
 });
