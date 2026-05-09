@@ -785,7 +785,7 @@ const MysticFortune = () => {
                   : "bg-white/10 text-gray-300 hover:bg-white/20"
               }`}
             >
-              Tarot Reading
+              Your Future Reader
             </button>
           </div>
 
