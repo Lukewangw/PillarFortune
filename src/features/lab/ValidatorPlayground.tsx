@@ -1,4 +1,4 @@
-import { CheckCircle2, RotateCcw, XCircle } from "lucide-react";
+import { IssueList } from "../../components/TraceDrawer";
 import { useMemo, useState } from "react";
 import { extractJson } from "../../core/llm/extract";
 import { composeInterpretation } from "../../core/llm/fallback";
@@ -59,67 +59,60 @@ export function ValidatorPlayground() {
   };
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
-      <div className="panel p-4">
-        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-mist-400">
-          <span className="mr-1">Drawn:</span>
+    <div className="grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-14">
+      <div className="min-w-0">
+        <p className="label">Drawn for this example</p>
+        <p className="mt-2 flex flex-wrap gap-1.5">
           {DRAW.cards.map((c) => (
-            <span key={c.cardId} className="chip !py-0.5">
+            <span key={c.cardId} className="tag">
               {c.positionLabel}: {getCard(c.cardId).name}
               {c.orientation === "reversed" ? " (reversed)" : ""}
             </span>
           ))}
-        </div>
-        <label htmlFor="playground" className="sr-only">
-          Model output to validate
+        </p>
+        <label htmlFor="playground" className="label mt-6 block">
+          Model output — edit it, or inject a fault below
         </label>
         <textarea
           id="playground"
           value={text}
           onChange={(e) => setText(e.target.value)}
           spellCheck={false}
-          className="field scrollbar-thin h-80 resize-y font-mono !text-[11.5px] leading-relaxed"
+          className="field scrollbar-thin mt-2 h-80 resize-y font-mono !text-[0.72rem] leading-relaxed"
         />
         <div className="mt-3 flex flex-wrap gap-2">
           {FAULTS.map((fault) => (
-            <button key={fault.label} type="button" onClick={() => inject(fault)} className="chip transition hover:border-bad-400/40 hover:text-mist-100">
+            <button key={fault.label} type="button" onClick={() => inject(fault)} className="tag cursor-pointer !px-2.5 !py-1.5 transition-colors hover:border-bad hover:text-bad">
               {fault.label}
             </button>
           ))}
-          <button type="button" onClick={() => setText(VALID)} className="chip transition hover:border-ok-400/40 hover:text-mist-100">
-            <RotateCcw className="h-3 w-3" /> Reset
+          <button type="button" onClick={() => setText(VALID)} className="tag cursor-pointer !px-2.5 !py-1.5 transition-colors hover:border-ink hover:text-ink">
+            ↺ Reset
           </button>
         </div>
       </div>
-      <div className="panel p-5" aria-live="polite">
+      <div className="min-w-0 border-t border-ink pt-4 lg:mt-[1.35rem]" aria-live="polite">
+        <p className="label">Validator verdict</p>
         {result.issues.length === 0 ? (
-          <p className="flex items-center gap-2 text-sm text-ok-400">
-            <CheckCircle2 className="h-4 w-4" /> Passes every check — this output would be shipped.
-          </p>
+          <p className="mt-3 text-[1.25rem] leading-snug text-ok">✓ Passes every check — this output would be shipped.</p>
         ) : (
           <>
-            <p className="flex items-center gap-2 text-sm text-bad-400">
-              <XCircle className="h-4 w-4" /> Rejected with {result.issues.length} issue{result.issues.length > 1 ? "s" : ""} — these exact messages go back to the model.
+            <p className="mt-3 text-[1.25rem] leading-snug text-bad">
+              ✕ Rejected with {result.issues.length} issue{result.issues.length > 1 ? "s" : ""}. These exact messages go back to the model.
             </p>
-            <ul className="mt-3 space-y-1.5">
-              {result.issues.map((issue, i) => (
-                <li key={i} className="rounded-lg bg-bad-400/[0.06] px-2.5 py-1.5 text-xs">
-                  <span className="mr-2 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px] uppercase text-bad-400">{issue.stage}</span>
-                  <span className="font-mono text-mist-300">{issue.path}</span> <span className="text-mist-400">— {issue.message}</span>
-                </li>
-              ))}
-            </ul>
+            <IssueList issues={result.issues} />
           </>
         )}
         {result.notes.length > 0 && (
-          <p className="mt-4 text-xs text-mist-500">
-            Normalized before validation: <span className="font-mono">{result.notes.join(", ")}</span>
+          <p className="mt-4 text-[0.88rem] text-ink-3">
+            Normalized before validation: <span className="font-mono text-[0.72rem]">{result.notes.join(", ")}</span>
           </p>
         )}
-        <p className="mt-5 border-t border-white/5 pt-4 text-xs leading-relaxed text-mist-500">
-          The schema is generated per draw: <span className="font-mono text-mist-400">cardId</span> must be one of{" "}
-          <span className="font-mono text-mist-400">{DRAW.cards.map((c) => c.cardId).join(", ")}</span>, positions and orientations must match the draw exactly, and free
-          text may not name any other card. Harmless deviations (a card name instead of its id, “Upright”, extra keys, wrong order) are normalized instead of rejected.
+        <p className="mt-6 border-t border-rule pt-4 text-[0.92rem] leading-relaxed text-ink-3">
+          The schema is generated per draw: <span className="font-mono text-[0.72rem] text-ink-2">cardId</span> must be one of{" "}
+          <span className="font-mono text-[0.72rem] text-ink-2">{DRAW.cards.map((c) => c.cardId).join(", ")}</span>, positions and orientations must match the draw exactly,
+          and free text may not name any other card. Harmless deviations (a card name instead of its id, “Upright”, extra keys, wrong order) are normalized instead of
+          rejected.
         </p>
       </div>
     </div>

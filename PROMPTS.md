@@ -66,3 +66,7 @@ The v2 rewrite was produced with Claude Code, starting from the request to bring
 ### Human-facing decisions
 - Crisis handling uses a two-tier gate (explicit statements → support only; uncertain detections → support plus the choice to continue), with the operating point chosen as "maximize recall subject to ≤ 5% false alarms".
 - Simulated results are labeled as simulated; real-model evaluation results are only published from real runs.
+
+### Visual redesign (v2.1)
+- Feedback on v2: the dark "mystical" interface (starfield, gold gradients, glass panels, pill chips) looked generic and AI-made. The request was "learn from other people's taste."
+- The redesign replaces it with a printed-almanac system: paper, ink and one vermilion accent, Newsreader and IBM Plex Mono, hairline rules, and figures with captions. The deck was redrawn as a Marseille-style printed deck. References and rules are in [docs/DESIGN.md](docs/DESIGN.md). Chart palettes were checked with a palette validator, not chosen by eye.

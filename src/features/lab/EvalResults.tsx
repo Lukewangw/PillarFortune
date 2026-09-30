@@ -1,4 +1,3 @@
-import { FlaskConical, Terminal } from "lucide-react";
 import type { EvalSummary } from "../../../ml/evals/metrics";
 import { codeLink } from "../../lib/config";
 
@@ -27,40 +26,38 @@ const DATASET = [
 export function EvalResults() {
   if (!published) {
     return (
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div className="panel p-5">
-          <h3 className="flex items-center gap-2 text-sm font-medium text-mist-100">
-            <FlaskConical className="h-4 w-4 text-gold-300" /> Ablations the harness runs
-          </h3>
-          <ul className="mt-3 space-y-2 text-sm text-mist-400">
+      <div className="grid gap-12 lg:grid-cols-2 lg:gap-10">
+        <div className="border-t border-ink pt-4">
+          <p className="label !text-ink">Ablations the harness runs</p>
+          <ol className="mt-3">
             {VARIANT_ROWS.map(([key, label]) => (
-              <li key={key}>
-                <span className="font-mono text-xs text-gold-300/80">{key}</span> — {label}
+              <li key={key} className="grid grid-cols-[8.5rem_1fr] gap-3 border-b border-rule py-2.5 text-[0.98rem]">
+                <span className="font-mono text-[0.75rem] leading-6 text-accent">{key}</span>
+                <span className="text-ink-2">{label}</span>
               </li>
             ))}
-          </ul>
-          <p className="mt-4 text-xs leading-relaxed text-mist-500">
+          </ol>
+          <p className="mt-4 text-[0.95rem] leading-relaxed text-ink-3">
             Metrics: validity at the first attempt, share served from the model vs. the fallback, mean model calls, p50/p95 latency and tokens; for the v1 baseline, how often
             shipped text names undrawn cards or overclaims certainty. Results are broken down by subset (adversarial, sensitive, Chinese…).
           </p>
         </div>
-        <div className="panel p-5">
-          <h3 className="text-sm font-medium text-mist-100">Dataset — 55 readings</h3>
-          <ul className="mt-3 space-y-1.5 text-sm text-mist-400">
+        <div className="border-t border-ink pt-4">
+          <p className="label !text-ink">Dataset · 55 readings</p>
+          <ul className="mt-3">
             {DATASET.map(([n, label]) => (
-              <li key={label} className="grid grid-cols-[2.25rem_1fr] gap-2">
-                <span className="text-right tabular-nums text-mist-100">{n}</span>
-                <span>{label}</span>
+              <li key={label} className="grid grid-cols-[2.5rem_1fr] gap-3 border-b border-rule py-2.5 text-[0.98rem]">
+                <span className="text-right font-mono text-[0.8rem] leading-6 tabular-nums text-ink">{n}</span>
+                <span className="text-ink-2">{label}</span>
               </li>
             ))}
           </ul>
-          <p className="mt-4 flex items-start gap-2 rounded-xl bg-white/[0.03] p-3 font-mono text-[11px] leading-relaxed text-mist-300">
-            <Terminal className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-300" />
+          <pre className="mt-5 whitespace-pre-wrap break-all bg-paper-3/70 p-3 font-mono text-[0.7rem] leading-relaxed text-ink">
             CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… npm run eval -- --provider workers-ai --publish
-          </p>
-          <p className="mt-2 text-xs text-mist-500">
+          </pre>
+          <p className="mt-3 text-[0.92rem] leading-relaxed text-ink-3">
             Real-model results appear here once the harness has been run against Workers AI (it needs the account's API token, so it runs in CI or locally, not in this page).{" "}
-            <a className="text-gold-300 hover:underline" href={codeLink("ml/evals/run.ts")} target="_blank" rel="noreferrer">
+            <a className="link" href={codeLink("ml/evals/run.ts")} target="_blank" rel="noreferrer">
               Harness source
             </a>
           </p>
@@ -71,42 +68,41 @@ export function EvalResults() {
 
   const rows = Object.entries(published.variants);
   return (
-    <div className="panel overflow-x-auto p-5">
-      <p className="text-xs text-mist-500">
+    <div className="overflow-x-auto border-t border-ink pt-4">
+      <p className="label">
         {published.meta.provider} · {published.meta.model} · {published.meta.cases} readings, {published.meta.followUps} follow-ups · {new Date(published.meta.date).toLocaleDateString()}
       </p>
-      <table className="mt-4 w-full min-w-[40rem] text-left text-sm">
-        <thead className="text-xs text-mist-500">
-          <tr>
-            <th className="py-2 font-normal">Variant</th>
-            <th className="py-2 font-normal">Valid at 1st call</th>
-            <th className="py-2 font-normal">Served from model</th>
-            <th className="py-2 font-normal">Fallback</th>
-            <th className="py-2 font-normal">Mean calls</th>
-            <th className="py-2 font-normal">p50 / p95</th>
+      <table className="mt-4 w-full min-w-[40rem] text-left text-[0.95rem]">
+        <thead>
+          <tr className="border-b border-ink">
+            {["Variant", "Valid at 1st call", "Served from model", "Fallback", "Mean calls", "p50 / p95"].map((h) => (
+              <th key={h} className="label py-2 pr-3 font-medium">
+                {h}
+              </th>
+            ))}
           </tr>
         </thead>
-        <tbody className="tabular-nums text-mist-200">
+        <tbody className="font-mono text-[0.8rem] tabular-nums text-ink-2">
           {rows.map(([name, v]) =>
             "baseline" in v ? (
-              <tr key={name} className="border-t border-white/5">
-                <td className="py-2 font-mono text-xs">{name}</td>
-                <td className="py-2" colSpan={3}>
+              <tr key={name} className="border-b border-rule">
+                <td className="py-2.5 pr-3 text-accent">{name}</td>
+                <td className="py-2.5 pr-3" colSpan={3}>
                   parseable {pct(v.baseline.parsed)} · undrawn cards shipped {pct(v.baseline.shippedHallucinatedCards)} · overclaims shipped {pct(v.baseline.shippedPolicyViolations)}
                 </td>
-                <td className="py-2">1</td>
-                <td className="py-2">
+                <td className="py-2.5 pr-3">1</td>
+                <td className="py-2.5 pr-3">
                   {ms(v.baseline.latencyMs.p50)} / {ms(v.baseline.latencyMs.p95)}
                 </td>
               </tr>
             ) : (
-              <tr key={name} className="border-t border-white/5">
-                <td className="py-2 font-mono text-xs">{name}</td>
-                <td className="py-2">{pct(v.readings.validAtFirstAttempt)}</td>
-                <td className="py-2">{pct(v.readings.servedFromModel)}</td>
-                <td className="py-2">{pct(v.readings.fallback)}</td>
-                <td className="py-2">{v.readings.meanAttempts ?? "—"}</td>
-                <td className="py-2">
+              <tr key={name} className="border-b border-rule">
+                <td className="py-2.5 pr-3 text-accent">{name}</td>
+                <td className="py-2.5 pr-3">{pct(v.readings.validAtFirstAttempt)}</td>
+                <td className="py-2.5 pr-3">{pct(v.readings.servedFromModel)}</td>
+                <td className="py-2.5 pr-3">{pct(v.readings.fallback)}</td>
+                <td className="py-2.5 pr-3">{v.readings.meanAttempts ?? "—"}</td>
+                <td className="py-2.5 pr-3">
                   {ms(v.readings.latencyMs.p50)} / {ms(v.readings.latencyMs.p95)}
                 </td>
               </tr>

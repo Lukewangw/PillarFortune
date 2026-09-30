@@ -1,20 +1,25 @@
-import { Check, ClipboardCopy, Download, ShieldCheck, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { EngineInfo } from "../core/llm/pipeline";
 import type { Trace, TraceSpan } from "../core/llm/trace";
 import type { Outcome, ValidationIssue } from "../core/llm/types";
 
-export const OUTCOME_META: Record<Outcome, { label: string; tone: string }> = {
-  accepted: { label: "Accepted first try", tone: "text-ok-400 border-ok-400/30 bg-ok-400/10" },
-  repaired: { label: "Repaired after validation", tone: "text-warn-400 border-warn-400/30 bg-warn-400/10" },
-  fallback: { label: "Knowledge-base fallback", tone: "text-bad-400 border-bad-400/30 bg-bad-400/10" },
-  offline: { label: "Offline composer", tone: "text-mist-300 border-white/15 bg-white/5" },
-  blocked: { label: "Routed to support", tone: "text-rose-300 border-rose-300/30 bg-rose-300/10" },
+export const OUTCOME_META: Record<Outcome, { label: string; mark: string }> = {
+  accepted: { label: "Accepted first try", mark: "bg-ok" },
+  repaired: { label: "Repaired after validation", mark: "bg-warn" },
+  fallback: { label: "Knowledge-base fallback", mark: "bg-bad" },
+  offline: { label: "Offline composer", mark: "bg-ink-3" },
+  blocked: { label: "Routed to support", mark: "bg-accent" },
 };
 
 export function OutcomeBadge({ outcome }: { outcome: Outcome }) {
   const meta = OUTCOME_META[outcome];
-  return <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs ${meta.tone}`}>{meta.label}</span>;
+  return (
+    <span className="inline-flex items-center gap-1.5 font-mono text-[0.68rem] font-medium uppercase leading-none tracking-[0.06em] text-ink-2">
+      <span className={`h-1.5 w-1.5 ${meta.mark}`} aria-hidden="true" />
+      {meta.label}
+    </span>
+  );
 }
 
 const fmtMs = (ms: number) => (ms >= 1000 ? `${(ms / 1000).toFixed(2)} s` : `${Math.max(0, Math.round(ms))} ms`);
@@ -30,20 +35,28 @@ function pretty(raw: string): string {
 function Timeline({ trace }: { trace: Trace }) {
   const total = Math.max(trace.durationMs, 1);
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       {trace.spans.map((span, i) => {
         const left = (span.startMs / total) * 100;
         const width = Math.max((span.durationMs / total) * 100, 0.8);
         const label = span.name === "llm.attempt" ? `attempt ${String(span.attrs.n)}` : span.name;
         const color =
-          span.status === "error" ? "bg-bad-400/70" : span.name === "llm.attempt" ? "bg-ok-400/70" : span.name.startsWith("fallback") ? "bg-warn-400/70" : "bg-lilac-400/60";
+          span.status === "error"
+            ? "bg-bad"
+            : span.name === "llm.attempt"
+              ? span.attrs.verdict === "accepted"
+                ? "bg-ok"
+                : "bg-bad"
+              : span.name.startsWith("fallback")
+                ? "bg-warn"
+                : "bg-ink";
         return (
-          <div key={i} className="grid grid-cols-[7.5rem_1fr_4rem] items-center gap-2 text-xs">
-            <span className="truncate font-mono text-mist-400">{label}</span>
-            <div className="relative h-2.5 rounded-full bg-white/5">
-              <div className={`absolute h-full rounded-full ${color}`} style={{ left: `${left}%`, width: `${Math.min(width, 100 - left)}%` }} />
+          <div key={i} className="grid grid-cols-[7rem_1fr_3.75rem] items-center gap-3 font-mono text-[0.7rem]">
+            <span className="truncate text-ink-2">{label}</span>
+            <div className="relative h-1.5 bg-paper-3">
+              <div className={`absolute h-full ${color}`} style={{ left: `${left}%`, width: `${Math.min(width, 100 - left)}%` }} />
             </div>
-            <span className="text-right tabular-nums text-mist-500">{fmtMs(span.durationMs)}</span>
+            <span className="text-right tabular-nums text-ink-3">{fmtMs(span.durationMs)}</span>
           </div>
         );
       })}
@@ -51,13 +64,13 @@ function Timeline({ trace }: { trace: Trace }) {
   );
 }
 
-function IssueList({ issues }: { issues: ValidationIssue[] }) {
+export function IssueList({ issues }: { issues: ValidationIssue[] }) {
   return (
-    <ul className="mt-2 space-y-1">
+    <ul className="mt-3 space-y-2 border-l-2 border-bad pl-3">
       {issues.map((issue, i) => (
-        <li key={i} className="rounded-lg bg-bad-400/[0.06] px-2.5 py-1.5 text-xs">
-          <span className="mr-2 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-bad-400">{issue.stage}</span>
-          <span className="font-mono text-mist-300">{issue.path}</span> <span className="text-mist-400">— {issue.message}</span>
+        <li key={i} className="text-[0.88rem] leading-snug">
+          <span className="mr-2 font-mono text-[0.65rem] font-medium uppercase tracking-[0.06em] text-bad">{issue.stage}</span>
+          <span className="font-mono text-[0.78rem] text-ink">{issue.path}</span> <span className="text-ink-2">— {issue.message}</span>
         </li>
       ))}
     </ul>
@@ -79,31 +92,31 @@ function AttemptCard({ span }: { span: TraceSpan }) {
   };
   const accepted = a.verdict === "accepted";
   return (
-    <div className={`rounded-xl border p-3 ${accepted ? "border-ok-400/25 bg-ok-400/[0.03]" : "border-bad-400/25 bg-bad-400/[0.03]"}`}>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-        <span className={`font-medium ${accepted ? "text-ok-400" : "text-bad-400"}`}>
-          Attempt {a.n} · {a.verdict.replace("_", " ")}
+    <div className="border-t border-rule py-4">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <span className="text-[1.05rem] text-ink">
+          Attempt {a.n} — <span className={accepted ? "text-ok" : "text-bad"}>{a.verdict.replace("_", " ")}</span>
         </span>
-        <span className="text-mist-500">{fmtMs(a.latencyMs)}</span>
-        <span className="text-mist-500">T={a.temperature}</span>
-        <span className="text-mist-500">{a.constrained ? "schema-constrained decoding" : "unconstrained"}</span>
-        {a.usage?.completionTokens !== undefined && (
-          <span className="text-mist-500">
-            {a.usage.promptTokens ?? "?"} → {a.usage.completionTokens} tokens
-          </span>
-        )}
+        <span className="font-mono text-[0.68rem] text-ink-3">
+          {fmtMs(a.latencyMs)} · T={a.temperature} · {a.constrained ? "schema-constrained" : "unconstrained"}
+          {a.usage?.completionTokens !== undefined && ` · ${a.usage.promptTokens ?? "?"} → ${a.usage.completionTokens} tokens`}
+        </span>
       </div>
-      {a.providerError && <p className="mt-2 text-xs text-bad-400">Provider error ({a.providerError.code}): {a.providerError.message}</p>}
+      {a.providerError && (
+        <p className="mt-2 text-[0.88rem] text-bad">
+          Provider error ({a.providerError.code}): {a.providerError.message}
+        </p>
+      )}
       {a.issues.length > 0 && <IssueList issues={a.issues} />}
       {a.notes.length > 0 && (
-        <p className="mt-2 text-[11px] text-mist-500">
-          Normalized: <span className="font-mono">{a.notes.join(", ")}</span>
+        <p className="mt-2 text-[0.82rem] text-ink-3">
+          Normalized: <span className="font-mono text-[0.72rem]">{a.notes.join(", ")}</span>
         </p>
       )}
       {a.raw && (
         <details className="mt-2">
-          <summary className="cursor-pointer text-xs text-mist-400 hover:text-mist-200">Raw model output</summary>
-          <pre className="scrollbar-thin mt-2 max-h-72 overflow-auto rounded-lg bg-ink-950/80 p-3 font-mono text-[11px] leading-relaxed text-mist-300">{pretty(a.raw)}</pre>
+          <summary className="label cursor-pointer transition-colors hover:!text-ink">Raw model output</summary>
+          <pre className="scrollbar-thin mt-2 max-h-72 overflow-auto bg-paper-3/70 p-3 font-mono text-[0.7rem] leading-relaxed text-ink-2">{pretty(a.raw)}</pre>
         </details>
       )}
     </div>
@@ -149,20 +162,20 @@ export function TraceDrawer({
 
   return (
     <div className="fixed inset-0 z-[60] flex justify-end" role="dialog" aria-modal="true" aria-label="Pipeline trace">
-      <button type="button" className="absolute inset-0 bg-ink-950/70 backdrop-blur-sm" onClick={onClose} aria-label="Close trace" />
-      <aside className="scrollbar-thin relative h-full w-full max-w-2xl overflow-y-auto border-l border-white/10 bg-ink-900/95 p-5 shadow-2xl sm:p-7">
+      <button type="button" className="absolute inset-0 bg-ink/25" onClick={onClose} aria-label="Close trace" />
+      <aside className="scrollbar-thin relative h-full w-full max-w-[40rem] animate-rise overflow-y-auto border-l border-rule bg-paper-2 px-5 py-6 shadow-[var(--shadow-sheet)] sm:px-8 sm:py-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="eyebrow">Under the hood</p>
-            <h2 className="display mt-1 text-3xl">Pipeline trace</h2>
-            <p className="mt-1 font-mono text-[11px] text-mist-500">{trace.id}</p>
+            <p className="label">Under the hood</p>
+            <h2 className="display mt-2 text-[2.1rem]">Pipeline trace</h2>
+            <p className="mt-1 font-mono text-[0.68rem] text-ink-3">{trace.id}</p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-full p-2 text-mist-400 hover:bg-white/5 hover:text-mist-100" aria-label="Close">
+          <button type="button" onClick={onClose} className="-mr-2 p-2 text-ink-3 transition-colors hover:text-ink" aria-label="Close">
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <dl className="mt-6 grid grid-cols-2 border-t border-ink sm:grid-cols-3">
           {[
             ["Outcome", outcome ? <OutcomeBadge key="o" outcome={outcome} /> : "—"],
             ["Engine", engine ? `${engine.provider} · ${engine.model.split("/").pop()}` : "—"],
@@ -171,29 +184,29 @@ export function TraceDrawer({
             ["Model calls", String(attempts.length)],
             ["Tokens", tokens.prompt + tokens.completion ? `${tokens.prompt} in · ${tokens.completion} out` : "—"],
           ].map(([label, value]) => (
-            <div key={label as string} className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-              <dt className="text-[11px] uppercase tracking-wider text-mist-500">{label}</dt>
-              <dd className="mt-1 break-words text-sm text-mist-100">{value}</dd>
+            <div key={label as string} className="border-b border-rule py-3 pr-3">
+              <dt className="label">{label}</dt>
+              <dd className="mt-1.5 break-words text-[0.95rem] leading-snug text-ink">{value}</dd>
             </div>
           ))}
         </dl>
 
-        <h3 className="eyebrow mt-8">Timeline</h3>
+        <h3 className="label mt-8 !text-ink">Timeline</h3>
         <div className="mt-3">
           <Timeline trace={trace} />
         </div>
 
         {route && (
           <>
-            <h3 className="eyebrow mt-8">Routing</h3>
-            <p className="mt-2 text-sm text-mist-300">
+            <h3 className="label mt-8 !text-ink">Routing</h3>
+            <p className="mt-2 text-[0.98rem] text-ink-2">
               {route.focus !== undefined && (
                 <>
-                  Focus <strong className="text-mist-100">{String(route.focus)}</strong> ({String(route.focusSource)}
+                  Focus <strong className="font-medium text-ink">{String(route.focus)}</strong> ({String(route.focusSource)}
                   {typeof route.focusConfidence === "number" ? `, ${Math.round(route.focusConfidence * 100)}%` : ""}) ·{" "}
                 </>
               )}
-              safety <strong className="text-mist-100">{String(route.safety)}</strong>
+              safety <strong className="font-medium text-ink">{String(route.safety)}</strong>
               {route.rule ? ` (rule: ${String(route.rule)})` : ""}
               {route.gate ? ` · ${String(route.gate)} gate` : ""}
             </p>
@@ -202,20 +215,25 @@ export function TraceDrawer({
 
         {draw?.cards && (
           <>
-            <h3 className="eyebrow mt-8 flex items-center gap-2">
-              Deterministic draw {verified && <ShieldCheck className="h-3.5 w-3.5 text-ok-400" />}
+            <h3 className="label mt-8 flex items-center gap-2 !text-ink">
+              Deterministic draw
+              {verified && (
+                <span className="seal !h-[1.1rem] !w-[1.1rem] !text-[0.65rem]" aria-hidden="true">
+                  验
+                </span>
+              )}
             </h3>
-            <p className="mt-2 text-sm text-mist-300">
-              <span className="font-mono text-xs text-mist-400">{draw.algorithm}</span> · seed <span className="font-mono text-xs">{draw.seed}</span> · picks [
-              {draw.picks?.join(", ")}]
+            <p className="mt-2 text-[0.95rem] text-ink-2">
+              <span className="font-mono text-[0.75rem] text-ink">{draw.algorithm}</span> · seed <span className="break-all font-mono text-[0.75rem]">{draw.seed}</span> ·
+              picks [{draw.picks?.join(", ")}]
             </p>
-            <ul className="mt-2 grid gap-1 font-mono text-xs text-mist-400 sm:grid-cols-2">
+            <ul className="mt-2 grid gap-x-4 gap-y-0.5 font-mono text-[0.72rem] text-ink-2 sm:grid-cols-2">
               {draw.cards.map((c) => (
                 <li key={c}>{c}</li>
               ))}
             </ul>
             {verified !== undefined && verified !== null && (
-              <p className={`mt-2 text-xs ${verified ? "text-ok-400" : "text-bad-400"}`}>
+              <p className={`mt-2 text-[0.9rem] ${verified ? "text-ok" : "text-bad"}`}>
                 {verified
                   ? "Recomputed in your browser from the seed and picks: identical to the cards that were interpreted."
                   : "The recomputed draw does not match the interpreted cards."}
@@ -226,8 +244,8 @@ export function TraceDrawer({
 
         {attempts.length > 0 && (
           <>
-            <h3 className="eyebrow mt-8">Model attempts</h3>
-            <div className="mt-3 space-y-3">
+            <h3 className="label mt-8 !text-ink">Model attempts</h3>
+            <div className="mt-2">
               {attempts.map((span, i) => (
                 <AttemptCard key={i} span={span} />
               ))}
@@ -235,15 +253,15 @@ export function TraceDrawer({
           </>
         )}
         {fallback && (
-          <p className="mt-4 rounded-xl border border-warn-400/25 bg-warn-400/[0.05] p-3 text-sm text-warn-400">
+          <p className="mt-4 border-l-2 border-warn pl-3 text-[0.95rem] text-ink-2">
             Fallback served ({String(fallback.attrs.reason)}): a deterministic reading composed from the card knowledge base, which passes the same validator.
           </p>
         )}
 
-        <div className="mt-8 flex flex-wrap gap-2">
+        <div className="mt-8 flex flex-wrap gap-2 border-t border-rule pt-6">
           <button
             type="button"
-            className="btn-ghost text-sm"
+            className="btn btn-secondary"
             onClick={() => {
               navigator.clipboard?.writeText(json).then(() => {
                 setCopied(true);
@@ -251,10 +269,10 @@ export function TraceDrawer({
               });
             }}
           >
-            {copied ? <Check className="h-4 w-4 text-ok-400" /> : <ClipboardCopy className="h-4 w-4" />} {copied ? "Copied" : "Copy JSON"}
+            {copied ? "Copied" : "Copy JSON"}
           </button>
-          <a className="btn-ghost text-sm" href={`data:application/json;charset=utf-8,${encodeURIComponent(json)}`} download={`${trace.id}.json`}>
-            <Download className="h-4 w-4" /> Download
+          <a className="btn btn-secondary" href={`data:application/json;charset=utf-8,${encodeURIComponent(json)}`} download={`${trace.id}.json`}>
+            Download
           </a>
         </div>
       </aside>

@@ -24,7 +24,7 @@ export const SPREADS: Record<SpreadId, SpreadDef> = {
     id: "single",
     name: "Single card",
     noun: "single-card reading",
-    tagline: "One card for a clear, focused answer.",
+    tagline: "One card, one clear answer.",
     grid: { cols: 1, rows: 1 },
     positions: [
       {
@@ -39,7 +39,7 @@ export const SPREADS: Record<SpreadId, SpreadDef> = {
     id: "three",
     name: "Past · Present · Future",
     noun: "three-card reading",
-    tagline: "A short timeline: what shaped this, where it stands, where it is heading.",
+    tagline: "What shaped this, where it stands, where it is heading.",
     grid: { cols: 3, rows: 1 },
     positions: [
       { id: "past", label: "Past", meaning: "What has shaped the situation and still echoes in it.", slot: { col: 0, row: 0 } },
@@ -56,7 +56,7 @@ export const SPREADS: Record<SpreadId, SpreadDef> = {
     id: "cross",
     name: "Five-card cross",
     noun: "five-card cross",
-    tagline: "Situation, obstacle, advice, surroundings and the likely direction.",
+    tagline: "Situation, obstacle, advice, surroundings, direction.",
     grid: { cols: 3, rows: 3 },
     positions: [
       { id: "situation", label: "Situation", meaning: "The heart of the matter as it stands today.", slot: { col: 1, row: 1 } },

@@ -1,9 +1,8 @@
-import { Loader2, Play } from "lucide-react";
 import { useState } from "react";
 import { CARDS, DECK_SIZE } from "../../core/tarot/deck";
 import { REVERSAL_PROBABILITY, shuffleDeck } from "../../core/tarot/engine";
 import { randomSeed } from "../../core/tarot/rng";
-import { Histogram, StatTile } from "./charts";
+import { Figure, Histogram, StatTile } from "./charts";
 
 /** Upper-tail probability of a chi-square statistic (Wilson–Hilferty normal approximation). */
 function chiSquarePValue(x: number, df: number): number {
@@ -51,35 +50,32 @@ export function DrawLab() {
   };
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_2fr]">
-      <div className="space-y-3">
+    <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-10">
+      <div className="space-y-8">
         <StatTile label="Algorithm" value="xoshiro128**" caption="128-bit state seeded by cyrb128, unbiased Fisher–Yates (rejection sampling), 32-bit integer math only — bit-identical in browser, Worker and Node." />
         <StatTile label="Reversal probability" value={`${REVERSAL_PROBABILITY * 100}%`} caption="Drawn from the same seeded stream after the shuffle, so orientation is part of the verifiable draw." />
       </div>
-      <div className="panel p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h3 className="text-sm font-medium text-mist-100">Is the shuffle fair? Test it.</h3>
-            <p className="mt-1 text-xs text-mist-500">Shuffle {N.toLocaleString()} fresh seeds in your browser and count which card lands on top. Every card should appear ~1,000 times.</p>
-          </div>
-          <button type="button" onClick={() => void run()} disabled={running !== null} className="btn-ghost text-sm">
-            {running !== null ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-            {running !== null ? `${Math.round((running / N) * 100)}%` : "Run the test"}
-          </button>
-        </div>
+      <Figure
+        n="7"
+        title="Is the shuffle fair? Test it."
+        note={`Shuffle ${N.toLocaleString()} fresh seeds in your browser and count which card lands on top. Every card should appear about 1,000 times.`}
+      >
+        <button type="button" onClick={() => void run()} disabled={running !== null} className="btn btn-primary">
+          {running !== null ? `Shuffling… ${Math.round((running / N) * 100)}%` : "Run the test"}
+        </button>
         {result ? (
-          <div className="mt-4">
+          <div className="mt-6">
             <Histogram values={result.counts} labels={CARDS.map((c) => c.name)} reference={result.n / DECK_SIZE} referenceLabel="expected 1,000" />
-            <p className="mt-3 text-xs text-mist-400">
-              χ² = <strong className="text-mist-100">{result.chi2.toFixed(1)}</strong> with 77 degrees of freedom, p ≈ <strong className="text-mist-100">{result.p.toFixed(2)}</strong>{" "}
-              {result.p > 0.001 ? "— consistent with a uniform shuffle." : "— unusually far from uniform."} Reversed on top: {(result.reversedRate * 100).toFixed(1)}%.{" "}
-              {Math.round(result.ms)} ms.
+            <p className="mt-3 text-[0.95rem] leading-relaxed text-ink-2">
+              χ² = <span className="font-mono text-[0.85rem] text-ink">{result.chi2.toFixed(1)}</span> with 77 degrees of freedom, p ≈{" "}
+              <span className="font-mono text-[0.85rem] text-ink">{result.p.toFixed(2)}</span> {result.p > 0.001 ? "— consistent with a uniform shuffle." : "— unusually far from uniform."}{" "}
+              Reversed on top: {(result.reversedRate * 100).toFixed(1)}%. {Math.round(result.ms)} ms.
             </p>
           </div>
         ) : (
-          <p className="mt-6 text-xs text-mist-500">The same test runs in CI on fixed seeds (χ² &lt; 121.2, the α = 0.001 critical value), together with determinism and seed-sensitivity checks.</p>
+          <p className="mt-4 text-[0.92rem] italic text-ink-3">The same test runs in CI on fixed seeds (χ² &lt; 121.2, the α = 0.001 critical value), together with determinism and seed-sensitivity checks.</p>
         )}
-      </div>
+      </Figure>
     </div>
   );
 }

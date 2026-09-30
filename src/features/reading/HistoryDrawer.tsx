@@ -1,4 +1,4 @@
-import { Loader2, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { OutcomeBadge } from "../../components/TraceDrawer";
 import type { HistoryItem } from "../../core/contracts";
@@ -26,33 +26,30 @@ export function HistoryDrawer({ onClose, onOpen }: { onClose: () => void; onOpen
 
   return (
     <div className="fixed inset-0 z-[60] flex justify-end" role="dialog" aria-modal="true" aria-label="Past readings">
-      <button type="button" className="absolute inset-0 bg-ink-950/70 backdrop-blur-sm" onClick={onClose} aria-label="Close history" />
-      <aside className="scrollbar-thin relative h-full w-full max-w-md overflow-y-auto border-l border-white/10 bg-ink-900/95 p-6">
-        <div className="flex items-center justify-between">
+      <button type="button" className="absolute inset-0 bg-ink/25" onClick={onClose} aria-label="Close history" />
+      <aside className="scrollbar-thin relative h-full w-full max-w-md animate-rise overflow-y-auto border-l border-rule bg-paper-2 px-6 py-7 shadow-[var(--shadow-sheet)]">
+        <div className="flex items-start justify-between">
           <div>
-            <p className="eyebrow">{mode === "live" ? "Linked to this browser, anonymously" : "Stored in this browser"}</p>
-            <h2 className="display mt-1 text-3xl">Past readings</h2>
+            <p className="label">{mode === "live" ? "Linked to this browser, anonymously" : "Stored in this browser"}</p>
+            <h2 className="display mt-2 text-[2.1rem]">Past readings</h2>
           </div>
-          <button type="button" onClick={onClose} className="rounded-full p-2 text-mist-400 hover:bg-white/5" aria-label="Close">
+          <button type="button" onClick={onClose} className="-mr-2 p-2 text-ink-3 transition-colors hover:text-ink" aria-label="Close">
             <X className="h-5 w-5" />
           </button>
         </div>
-        {!items && !error && (
-          <p className="mt-8 flex items-center gap-2 text-sm text-mist-400">
-            <Loader2 className="h-4 w-4 animate-spin" /> Loading…
-          </p>
-        )}
-        {error && <p className="mt-8 text-sm text-bad-400">{error}</p>}
-        {items?.length === 0 && <p className="mt-8 text-sm text-mist-400">No readings yet with this engine.</p>}
-        <ul className="mt-6 space-y-3">
+        {!items && !error && <p className="label mt-8">Loading…</p>}
+        {error && <p className="mt-8 text-[0.95rem] text-bad">{error}</p>}
+        {items?.length === 0 && <p className="mt-8 text-[1rem] italic text-ink-3">No readings yet with this engine.</p>}
+        <ul className="mt-6 border-t border-ink">
           {items?.map((item) => (
-            <li key={item.id}>
-              <button type="button" onClick={() => onOpen(item.id)} className="panel w-full p-4 text-left transition hover:!border-gold-400/40">
-                <p className="text-xs text-mist-500">
-                  {new Date(item.createdAt).toLocaleString()} · {isSpreadId(item.spread) ? SPREADS[item.spread].name : item.spread}
+            <li key={item.id} className="border-b border-rule">
+              <button type="button" onClick={() => onOpen(item.id)} className="group w-full py-4 text-left">
+                <p className="label">
+                  {new Date(item.createdAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })} ·{" "}
+                  {isSpreadId(item.spread) ? SPREADS[item.spread].name : item.spread}
                 </p>
-                <p className="mt-1 line-clamp-2 text-sm text-mist-100">{item.question}</p>
-                <p className="mt-2 text-xs text-mist-400">{item.cards.map((c) => `${c.name}${c.orientation === "reversed" ? " (r)" : ""}`).join(" · ")}</p>
+                <p className="mt-1.5 line-clamp-2 text-[1.05rem] leading-snug text-ink transition-colors group-hover:text-accent">“{item.question}”</p>
+                <p className="mt-1.5 text-[0.88rem] italic text-ink-3">{item.cards.map((c) => `${c.name}${c.orientation === "reversed" ? " (reversed)" : ""}`).join(" · ")}</p>
                 <div className="mt-2">
                   <OutcomeBadge outcome={item.outcome as Outcome} />
                 </div>

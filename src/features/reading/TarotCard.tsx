@@ -22,10 +22,12 @@ export function TarotCard({
           revealed ? "[transform:rotateY(180deg)]" : ""
         }`}
       >
-        <div className={`absolute inset-0 rounded-[7%] shadow-[var(--shadow-card)] [backface-visibility:hidden] ${glow ? "ring-1 ring-gold-400/40" : ""}`}>
+        <div
+          className={`absolute inset-0 rounded-[5%] [backface-visibility:hidden] ${glow ? "shadow-[var(--shadow-lift)]" : "shadow-[var(--shadow-card)]"}`}
+        >
           <CardBack className="h-full w-full" />
         </div>
-        <div className="absolute inset-0 rounded-[7%] shadow-[var(--shadow-card)] [backface-visibility:hidden] [transform:rotateY(180deg)]">
+        <div className="absolute inset-0 rounded-[5%] shadow-[var(--shadow-card)] [backface-visibility:hidden] [transform:rotateY(180deg)]">
           {cardId && (
             <div className={`h-full w-full ${orientation === "reversed" ? "rotate-180" : ""}`}>
               <CardFace cardId={cardId} className="h-full w-full" />

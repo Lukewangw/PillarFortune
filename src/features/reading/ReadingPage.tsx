@@ -1,4 +1,4 @@
-import { AlertCircle, ArrowLeft, Eye, Wand2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { TraceDrawer } from "../../components/TraceDrawer";
 import type { ReadingDTO } from "../../core/contracts";
@@ -171,8 +171,8 @@ export function ReadingPage({ readingId }: { readingId?: string }) {
       {phase === "ask" && (
         <>
           {error && (
-            <p className="mx-auto mt-6 flex max-w-3xl items-center gap-2 px-6 text-sm text-bad-400">
-              <AlertCircle className="h-4 w-4" /> {error}
+            <p className="mx-auto mt-6 max-w-6xl px-4 text-[0.95rem] text-bad sm:px-6" role="alert">
+              {error}
             </p>
           )}
           <AskStep
@@ -188,21 +188,33 @@ export function ReadingPage({ readingId }: { readingId?: string }) {
         </>
       )}
 
-      {phase === "loading" && <p className="py-32 text-center text-mist-400">Opening your reading…</p>}
+      {phase === "loading" && <p className="label py-32 text-center">Opening your reading…</p>}
 
       {phase === "deck" && (
-        <DeckStep spread={spread} seed={seed} picks={picks} onPick={pick} onPickForMe={pickForMe} onBack={() => setPhase("ask")} onDone={toReveal} />
+        <DeckStep
+          spread={spread}
+          seed={seed}
+          question={question}
+          picks={picks}
+          onPick={pick}
+          onPickForMe={pickForMe}
+          onBack={() => setPhase("ask")}
+          onDone={toReveal}
+        />
       )}
 
       {(phase === "reveal" || phase === "interpreting") && localDraw && (
-        <section className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6">
-          <button type="button" onClick={() => setPhase("ask")} disabled={phase === "interpreting"} className="btn-ghost !px-3 text-sm">
-            <ArrowLeft className="h-4 w-4" /> Start over
-          </button>
-          <div className="mt-6 text-center">
-            <p className="eyebrow">{SPREADS[spread].name}</p>
-            <h2 className="display mt-2 text-3xl sm:text-4xl">{allRevealed ? "Your cards" : "Turn over your cards"}</h2>
-            <p className="mx-auto mt-2 max-w-xl text-sm text-mist-400">“{question.trim()}”</p>
+        <section className="mx-auto max-w-5xl px-4 pb-16 pt-6 sm:px-6 sm:pt-8">
+          <div className="flex items-baseline justify-between gap-3">
+            <button type="button" onClick={() => setPhase("ask")} disabled={phase === "interpreting"} className="label transition-colors hover:!text-ink disabled:opacity-40">
+              ← Start over
+            </button>
+            <p className="label">{SPREADS[spread].name}</p>
+          </div>
+          <div className="mx-auto mt-8 max-w-2xl text-center">
+            <p className="label">{allRevealed ? "Every card is face up" : "Tap a card to turn it over"}</p>
+            <h2 className="display mt-3 text-[2.1rem] sm:text-[2.7rem]">{allRevealed ? "Your cards" : "Turn over your cards"}</h2>
+            <p className="mt-3 text-[1.05rem] italic leading-snug text-ink-2">“{question.trim()}”</p>
           </div>
           <div className="mt-10">
             <SpreadLayout
@@ -223,11 +235,11 @@ export function ReadingPage({ readingId }: { readingId?: string }) {
                       orientation={card.orientation}
                       revealed={isRevealed}
                       glow={!isRevealed}
-                      className="w-24 transition group-enabled:group-hover:-translate-y-1 sm:w-32"
+                      className={`${spread === "cross" ? "w-[4.6rem] sm:w-[5.6rem]" : "w-24 sm:w-32"} transition-transform duration-200 group-enabled:group-hover:-translate-y-1`}
                     />
-                    <span className="mt-3 text-[11px] uppercase tracking-wider text-gold-300">{card.positionLabel}</span>
-                    <span className={`mt-1 h-10 max-w-32 text-center text-xs ${isRevealed ? "text-mist-200" : "text-mist-500"}`}>
-                      {isRevealed ? `${getCard(card.cardId).name}${card.orientation === "reversed" ? " · reversed" : ""}` : "tap to reveal"}
+                    <span className="label mt-3 !text-ink">{card.positionLabel}</span>
+                    <span className={`mt-1 h-10 max-w-32 text-center text-[0.9rem] leading-tight ${isRevealed ? "text-ink-2" : "italic text-ink-3"}`}>
+                      {isRevealed ? `${getCard(card.cardId).name}${card.orientation === "reversed" ? ", reversed" : ""}` : "face down"}
                     </span>
                   </button>
                 );
@@ -238,17 +250,17 @@ export function ReadingPage({ readingId }: { readingId?: string }) {
           {phase === "reveal" && (
             <div className="mt-8 flex flex-col items-center gap-3">
               {error && (
-                <p className="flex items-center gap-2 text-sm text-bad-400">
-                  <AlertCircle className="h-4 w-4" /> {error}
+                <p className="text-[0.95rem] text-bad" role="alert">
+                  {error}
                 </p>
               )}
               {allRevealed ? (
-                <button type="button" onClick={() => void interpret()} className="btn-primary">
-                  <Wand2 className="h-4 w-4" /> Interpret my reading
+                <button type="button" onClick={() => void interpret()} className="btn btn-primary">
+                  Interpret my reading <ArrowRight className="nudge" />
                 </button>
               ) : (
-                <button type="button" onClick={() => setRevealed(new Array(n).fill(true))} className="btn-ghost text-sm">
-                  <Eye className="h-4 w-4" /> Reveal all
+                <button type="button" onClick={() => setRevealed(new Array(n).fill(true))} className="btn btn-secondary">
+                  Reveal all
                 </button>
               )}
             </div>
@@ -258,7 +270,7 @@ export function ReadingPage({ readingId }: { readingId?: string }) {
       )}
 
       {phase === "support" && support && (
-        <section className="px-4 py-16 sm:px-6">
+        <section className="px-4 py-14 sm:px-6 sm:py-20">
           <SupportCard support={support} onEdit={reset} onContinue={() => void interpret(true)} />
         </section>
       )}

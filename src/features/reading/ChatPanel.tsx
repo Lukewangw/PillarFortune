@@ -1,4 +1,3 @@
-import { Activity, Loader2, MessageCircle, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { OutcomeBadge } from "../../components/TraceDrawer";
 import type { EngineInfo } from "../../core/llm/pipeline";
@@ -20,6 +19,7 @@ export interface ChatEntry {
   error?: boolean;
 }
 
+/** Follow-up questions as a transcript: the session keeps the question, the cards and the conversation. */
 export function ChatPanel({
   draw,
   entries,
@@ -38,9 +38,12 @@ export function ChatPanel({
   onInspect: (entry: ChatEntry) => void;
 }) {
   const [text, setText] = useState("");
-  const listRef = useRef<HTMLDivElement>(null);
+  const endRef = useRef<HTMLDivElement>(null);
+  // Follow the conversation only when it grows, never on mount (a reopened reading starts at the top).
+  const seen = useRef(entries.length);
   useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
+    if (entries.length > seen.current || busy) endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    seen.current = entries.length;
   }, [entries.length, busy]);
 
   const send = (message: string) => {
@@ -52,71 +55,81 @@ export function ChatPanel({
   const unused = suggestions.filter((s) => !entries.some((e) => e.role === "user" && e.content === s));
 
   return (
-    <section className="panel p-5 sm:p-6" aria-label="Follow-up conversation">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="display flex items-center gap-2 text-2xl">
-          <MessageCircle className="h-5 w-5 text-gold-300" /> Ask a follow-up
-        </h3>
-        <p className="text-xs text-mist-500">Answers stay grounded in the cards you drew; the session remembers the conversation.</p>
+    <section aria-label="Follow-up conversation">
+      <div className="border-t border-ink pt-4">
+        <h2 className="text-[1.6rem] leading-tight">Ask a follow-up</h2>
+        <p className="mt-1 text-[0.95rem] text-ink-3">Answers stay grounded in the cards you drew, and the session remembers the conversation.</p>
       </div>
 
-      <div ref={listRef} className="scrollbar-thin mt-4 max-h-[28rem] space-y-4 overflow-y-auto pr-1">
-        {entries.length === 0 && <p className="text-sm text-mist-500">Ask about a specific card, how two cards relate, or what to do next.</p>}
-        {entries.map((entry, i) =>
-          entry.role === "user" ? (
-            <div key={i} className="flex justify-end">
-              <p className="max-w-[85%] rounded-2xl rounded-br-md bg-gold-400/15 px-4 py-2.5 text-sm text-gold-100">{entry.content}</p>
-            </div>
-          ) : (
-            <div key={i} className="max-w-[92%]">
-              {entry.support && <SupportCard support={entry.support} compact />}
-              <p className={`mt-2 rounded-2xl rounded-bl-md border px-4 py-3 text-sm leading-relaxed ${entry.error ? "border-bad-400/30 text-bad-400" : "border-white/5 bg-white/[0.03] text-mist-200"}`}>
-                {entry.content}
-              </p>
-              {!entry.error && (
-                <div className="mt-1.5 flex flex-wrap items-center gap-2 pl-1">
-                  {entry.refs?.map((ref) => {
-                    const drawn = draw.cards.find((c) => c.cardId === ref.cardId);
-                    return (
-                      <span key={ref.cardId} className="chip !py-0.5 !text-[11px]">
-                        {getCard(ref.cardId).name}
-                        {drawn ? ` · ${drawn.positionLabel}` : ""}
-                      </span>
-                    );
-                  })}
-                  {entry.outcome && entry.outcome !== "accepted" && entry.outcome !== "offline" && <OutcomeBadge outcome={entry.outcome} />}
-                  {entry.trace && (
-                    <button type="button" onClick={() => onInspect(entry)} className="inline-flex items-center gap-1 text-[11px] text-mist-500 hover:text-gold-200">
-                      <Activity className="h-3 w-3" /> trace
-                    </button>
+      {entries.length > 0 && (
+        <ol className="mt-6 space-y-6">
+          {entries.map((entry, i) =>
+            entry.role === "user" ? (
+              <li key={i} data-entry="user" className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-3">
+                <span className="label pt-1">You</span>
+                <p className="text-[1.05rem] italic leading-relaxed text-ink">{entry.content}</p>
+              </li>
+            ) : (
+              <li key={i} data-entry="assistant" className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-3">
+                <span className={`label pt-1 ${entry.error ? "!text-bad" : "!text-accent"}`}>{entry.error ? "Error" : "Reply"}</span>
+                <div className="min-w-0">
+                  {entry.support && <SupportCard support={entry.support} compact />}
+                  <p className={`text-[1.02rem] leading-relaxed ${entry.error ? "text-bad" : "text-ink-2"} ${entry.support ? "mt-3" : ""}`}>{entry.content}</p>
+                  {!entry.error && (entry.refs?.length || entry.trace || (entry.outcome && entry.outcome !== "accepted" && entry.outcome !== "offline")) && (
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                      {entry.refs?.map((ref) => {
+                        const drawn = draw.cards.find((c) => c.cardId === ref.cardId);
+                        return (
+                          <span key={ref.cardId} className="tag">
+                            {getCard(ref.cardId).name}
+                            {drawn ? ` · ${drawn.positionLabel}` : ""}
+                          </span>
+                        );
+                      })}
+                      {entry.outcome && entry.outcome !== "accepted" && entry.outcome !== "offline" && <OutcomeBadge outcome={entry.outcome} />}
+                      {entry.trace && (
+                        <button type="button" onClick={() => onInspect(entry)} className="label transition-colors hover:!text-accent">
+                          Trace →
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
-          ),
-        )}
-        {busy && (
-          <p className="flex items-center gap-2 text-sm text-mist-400">
-            <Loader2 className="h-4 w-4 animate-spin text-gold-300" /> Consulting the cards…
-          </p>
-        )}
-      </div>
+              </li>
+            ),
+          )}
+          {busy && (
+            <li className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-3">
+              <span className="label pt-1 !text-accent">Reply</span>
+              <p className="flex items-center gap-2 text-[1rem] italic text-ink-3">
+                <span className="inline-block h-2 w-2 animate-pulse bg-accent" aria-hidden="true" /> Consulting the cards…
+              </p>
+            </li>
+          )}
+        </ol>
+      )}
+      <div ref={endRef} />
 
       {unused.length > 0 && !disabledReason && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {unused.map((s) => (
-            <button key={s} type="button" onClick={() => send(s)} disabled={busy} className="chip text-left transition hover:border-gold-400/40 hover:text-mist-100 disabled:opacity-50">
-              {s}
-            </button>
-          ))}
+        <div className="mt-6">
+          <p className="label">You might ask</p>
+          <ul className="mt-2 space-y-1">
+            {unused.map((s) => (
+              <li key={s}>
+                <button type="button" onClick={() => send(s)} disabled={busy} className="text-left text-[1rem] italic leading-snug text-ink-2 transition-colors hover:text-accent disabled:opacity-50">
+                  “{s}”
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
       {disabledReason ? (
-        <p className="mt-4 text-sm text-mist-500">{disabledReason}</p>
+        <p className="mt-6 text-[0.95rem] text-ink-3">{disabledReason}</p>
       ) : (
         <form
-          className="mt-4 flex gap-2"
+          className="mt-6 flex gap-2"
           onSubmit={(e) => {
             e.preventDefault();
             send(text);
@@ -131,11 +144,11 @@ export function ChatPanel({
             onChange={(e) => setText(e.target.value)}
             maxLength={MESSAGE_LIMITS.max}
             placeholder="What does the card in the future position ask of me?"
-            className="field flex-1 !rounded-full !py-2.5"
+            className="field flex-1 text-[1.02rem]"
             autoComplete="off"
           />
-          <button type="submit" disabled={busy || text.trim().length < MESSAGE_LIMITS.min} className="btn-primary !px-4" aria-label="Send">
-            <Send className="h-4 w-4" />
+          <button type="submit" disabled={busy || text.trim().length < MESSAGE_LIMITS.min} className="btn btn-primary" aria-label="Send">
+            Send
           </button>
         </form>
       )}

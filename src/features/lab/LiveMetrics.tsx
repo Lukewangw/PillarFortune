@@ -1,8 +1,7 @@
-import { Activity, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api } from "../../lib/api";
 import { useEngine } from "../../lib/engineContext";
-import { BarList, StatTile } from "./charts";
+import { BarList, Figure, StatTile } from "./charts";
 
 interface Summary {
   total: number;
@@ -38,42 +37,32 @@ export function LiveMetrics() {
 
   if (live.status !== "up") {
     return (
-      <div className="panel p-5 text-sm leading-relaxed text-mist-400">
-        <p className="flex items-center gap-2 font-medium text-mist-100">
-          <Activity className="h-4 w-4 text-gold-300" /> Production monitoring
-        </p>
-        <p className="mt-2">
-          When this page is served by the Cloudflare Worker, this panel shows live numbers from the <span className="font-mono text-xs">llm_traces</span> table: validity at the
-          first attempt, share served from the model, fallback rate and reasons, p50/p95 latency, tokens, and which validation checks fail most. This build is running without
-          a backend, so there is nothing live to show.
+      <div className="max-w-[46rem] border-t border-ink pt-4">
+        <p className="label !text-ink">Production monitoring</p>
+        <p className="mt-2 text-[1rem] leading-relaxed text-ink-2">
+          When this page is served by the Cloudflare Worker, this section shows live numbers from the <span className="font-mono text-[0.8rem] text-ink">llm_traces</span> table:
+          validity at the first attempt, share served from the model, fallback rate and reasons, p50/p95 latency, tokens, and which validation checks fail most. This build is
+          running without a backend, so there is nothing live to show.
         </p>
       </div>
     );
   }
-  if (error) return <p className="text-sm text-bad-400">{error}</p>;
-  if (!metrics)
-    return (
-      <p className="flex items-center gap-2 text-sm text-mist-400">
-        <Loader2 className="h-4 w-4 animate-spin" /> Loading live metrics…
-      </p>
-    );
+  if (error) return <p className="text-[0.95rem] text-bad">{error}</p>;
+  if (!metrics) return <p className="label">Loading live metrics…</p>;
 
   const r = metrics.reading;
   return (
-    <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatTile label={`Readings, last ${metrics.window.days} days`} value={r.total.toLocaleString()} caption={`${metrics.followup.total.toLocaleString()} follow-ups`} />
+    <div className="space-y-12">
+      <div className="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        <StatTile label={`Readings · last ${metrics.window.days} days`} value={r.total.toLocaleString()} caption={`${metrics.followup.total.toLocaleString()} follow-ups`} />
         <StatTile label="Valid at the first model call" value={pct(r.validAtFirstAttempt)} caption={`served from the model: ${pct(r.servedFromModel)}`} />
         <StatTile label="Fallback rate" value={pct(r.fallbackRate)} caption={`mean model calls per reading: ${r.meanAttempts?.toFixed(2) ?? "—"}`} />
         <StatTile label="Latency p50 / p95" value={`${sec(r.latencyMs.p50)} / ${sec(r.latencyMs.p95)}`} caption="end-to-end inside the Worker" />
       </div>
       {metrics.issues.length > 0 && (
-        <div className="panel p-5">
-          <h3 className="text-sm font-medium text-mist-100">What the validators catch in production</h3>
-          <div className="mt-4">
-            <BarList rows={metrics.issues.slice(0, 8).map((i) => ({ label: i.code, value: i.count }))} max={Math.max(...metrics.issues.map((i) => i.count))} format={(v) => String(v)} />
-          </div>
-        </div>
+        <Figure n="8" title="What the validators catch in production">
+          <BarList rows={metrics.issues.slice(0, 8).map((i) => ({ label: i.code, value: i.count }))} max={Math.max(...metrics.issues.map((i) => i.count))} format={(v) => String(v)} />
+        </Figure>
       )}
     </div>
   );

@@ -12,6 +12,8 @@ Cards are drawn by a seeded, verifiable shuffle; a language model only *interpre
 | Ask | Draw from the seeded deck | Reading | Pipeline trace |
 |---|---|---|---|
 | ![Ask](docs/screenshots/ask.webp) | ![Deck](docs/screenshots/deck.webp) | ![Reading](docs/screenshots/reading.webp) | ![Trace](docs/screenshots/trace.webp) |
+| **Break the output** | **Retries vs. reliability** | **Question router** | **Four Pillars** |
+| ![Validator playground](docs/screenshots/lab-contract.webp) | ![Reliability figures](docs/screenshots/lab-reliability.webp) | ![Router figures](docs/screenshots/lab-router.webp) | ![Four Pillars](docs/screenshots/pillars.webp) |
 
 > The GitHub Pages build runs the same pipeline code in the browser, with an offline knowledge-base engine and a *simulated* LLM that fails on purpose (so you can watch validation, repair and fallback). The Cloudflare deployment serves the identical frontend with the live model — Llama 3.3 70B on Workers AI — behind Durable Object sessions and D1.
 
@@ -151,6 +153,7 @@ npm run eval:simulate                         # reliability sweep → ml/evals/r
 - **Pay for retries only when they help.** Normalization absorbs harmless deviations; temperature drops on each repair; the deadline and a daily call budget bound latency and cost; every path ends in an output that passes the same validator.
 - **Small model first.** A 0.1 ms classifier decides whether to call the 70B model at all and how, and it runs identically in the browser for instant feedback while typing.
 - **Honest evaluation.** Blind test scored once, dev used for error analysis, simulation labeled as simulation, real-model results only from real runs.
+- **Look like what it is.** The interface is set like a printed almanac — paper, ink and one vermilion accent, a serif for reading and a monospace for machinery — so the checkable parts (seeds, traces, validator findings) read as first-class content rather than decoration. Rules and references: [docs/DESIGN.md](docs/DESIGN.md).
 
 ## Responsible use
 
@@ -158,4 +161,4 @@ Readings are for reflection and entertainment, not advice. Medical and high-stak
 
 ## Credits
 
-The card art is an original SVG deck drawn for this project, and the card meanings are original text. Development used AI assistance; see [PROMPTS.md](PROMPTS.md).
+The card art is an original SVG deck drawn for this project in the manner of a printed Marseille deck, and the card meanings are original text. Typefaces: Newsreader (Production Type) and IBM Plex Mono, both under the SIL Open Font License. Development used AI assistance; see [PROMPTS.md](PROMPTS.md).

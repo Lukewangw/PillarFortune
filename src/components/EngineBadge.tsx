@@ -1,10 +1,11 @@
-import { Check, ChevronDown, Cpu, FlaskConical, WifiOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ENGINE_INFO, type EngineMode } from "../lib/engine";
 import { useEngine } from "../lib/engineContext";
 
-const ICONS: Record<EngineMode, typeof Cpu> = { live: Cpu, demo: FlaskConical, offline: WifiOff };
+const MARK: Record<EngineMode, string> = { live: "bg-ok", demo: "bg-warn", offline: "bg-ink-3" };
+const SHORT: Record<EngineMode, string> = { live: "Live", demo: "Sim", offline: "Offline" };
 
+/** The interpretation engine switch: a quiet text control in the header that opens a small menu. */
 export function EngineBadge() {
   const { mode, setMode, live } = useEngine();
   const [open, setOpen] = useState(false);
@@ -22,9 +23,8 @@ export function EngineBadge() {
     };
   }, [open]);
 
-  const dot = mode === "live" ? "bg-ok-400" : mode === "demo" ? "bg-warn-400" : "bg-mist-400";
-  const label = mode === "live" ? live.health?.model.split("/").pop()?.replace("-instruct-fp8-fast", "") ?? "Live" : ENGINE_INFO[mode].title;
-  const shortLabel = mode === "live" ? "Live" : mode === "demo" ? "Sim" : "Offline";
+  const label =
+    mode === "live" ? (live.health?.model.split("/").pop()?.replace("-instruct-fp8-fast", "").replace("llama-", "Llama ") ?? "Live") : mode === "demo" ? "Simulated" : "Offline";
   const liveNote =
     live.status === "up"
       ? `Connected · ${live.health?.model ?? ""}`
@@ -39,42 +39,41 @@ export function EngineBadge() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="btn-ghost !px-3 !py-1.5 text-xs"
+        className="label flex items-center gap-2 py-1 transition-colors hover:!text-ink"
         aria-haspopup="menu"
         aria-expanded={open}
+        title="Interpretation engine"
       >
-        <span className={`h-2 w-2 rounded-full ${dot} shadow-[0_0_10px_currentColor]`} />
-        <span className="hidden max-w-[9rem] truncate sm:inline">{label}</span>
-        <span className="sm:hidden">{shortLabel}</span>
-        <ChevronDown className="hidden h-3.5 w-3.5 opacity-60 sm:block" />
+        <span className={`h-1.5 w-1.5 ${MARK[mode]}`} aria-hidden="true" />
+        <span className="hidden sm:inline">Engine:</span>
+        <span className="hidden max-w-[9rem] truncate text-ink sm:inline">{label}</span>
+        <span className="text-ink sm:hidden">{SHORT[mode]}</span>
+        <span aria-hidden="true">{open ? "▴" : "▾"}</span>
       </button>
       {open && (
-        <div role="menu" className="panel absolute right-0 z-50 mt-2 w-[min(22rem,calc(100vw-2rem))] p-2 shadow-2xl">
-          <p className="px-3 pb-2 pt-1 text-xs text-mist-400">Interpretation engine</p>
+        <div role="menu" className="sheet absolute right-0 z-50 mt-3 w-[min(22rem,calc(100vw-2rem))] animate-rise p-1.5 shadow-[var(--shadow-lift)]">
+          <p className="label px-3 pb-1 pt-2">Interpretation engine</p>
           {(["live", "demo", "offline"] as EngineMode[]).map((option) => {
-            const Icon = ICONS[option];
             const disabled = option === "live" && live.status !== "up";
+            const selected = mode === option;
             return (
               <button
                 key={option}
                 role="menuitemradio"
-                aria-checked={mode === option}
+                aria-checked={selected}
                 disabled={disabled}
                 onClick={() => {
                   setMode(option);
                   setOpen(false);
                 }}
-                className="flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-45"
+                className="flex w-full items-start gap-3 px-3 py-2.5 text-left transition-colors hover:bg-paper-3/60 disabled:cursor-not-allowed disabled:opacity-45"
               >
-                <Icon className="mt-0.5 h-4 w-4 shrink-0 text-gold-300" />
+                <span className={`mt-1.5 flex h-3 w-3 shrink-0 items-center justify-center border ${selected ? "border-ink" : "border-rule-2"}`} aria-hidden="true">
+                  {selected && <span className="h-1.5 w-1.5 bg-accent" />}
+                </span>
                 <span className="flex-1">
-                  <span className="flex items-center gap-2 text-sm font-medium text-mist-100">
-                    {ENGINE_INFO[option].title}
-                    {mode === option && <Check className="h-3.5 w-3.5 text-ok-400" />}
-                  </span>
-                  <span className="mt-0.5 block text-xs leading-relaxed text-mist-400">
-                    {option === "live" ? liveNote : ENGINE_INFO[option].detail}
-                  </span>
+                  <span className="block text-[0.95rem] leading-snug text-ink">{ENGINE_INFO[option].title}</span>
+                  <span className="mt-0.5 block text-[0.8rem] leading-snug text-ink-3">{option === "live" ? liveNote : ENGINE_INFO[option].detail}</span>
                 </span>
               </button>
             );

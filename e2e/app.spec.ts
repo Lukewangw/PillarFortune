@@ -15,12 +15,12 @@ test("a full reading: shuffle, pick, reveal, interpret, follow up, inspect", asy
   await drawAndInterpret(page, "What should I focus on in my new role at work?");
   await expect(page.getByText("The reading", { exact: true })).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText(/draw verified/i)).toBeVisible();
-  await expect(page.locator("ol li.panel")).toHaveCount(3);
+  await expect(page.locator("ol[aria-label='The cards'] > li")).toHaveCount(3);
 
   await page.fill("#followup", "What does the future card suggest?");
   await page.getByRole("button", { name: "Send" }).click();
   await expect(page.getByText("Consulting the cards…")).toBeHidden({ timeout: 30_000 });
-  await expect(page.locator("section[aria-label='Follow-up conversation'] p.rounded-2xl").nth(1)).toBeVisible();
+  await expect(page.locator("section[aria-label='Follow-up conversation'] [data-entry='assistant']").first()).toBeVisible();
 
   await page.getByRole("button", { name: /inspect pipeline/i }).click();
   const drawer = page.getByRole("dialog", { name: "Pipeline trace" });
@@ -40,7 +40,7 @@ test("Four Pillars chart matches a hand-checked reference", async ({ page }) => 
   await page.fill("input[type='time']", "12:00");
   await page.selectOption("select", "Asia/Shanghai");
   for (const char of ["己", "卯", "丙", "子", "戊", "午"]) {
-    await expect(page.locator("p.font-display", { hasText: char }).first()).toBeVisible();
+    await expect(page.locator("[data-pillar-char]", { hasText: char }).first()).toBeVisible();
   }
   await expect(page.getByText("Day Master 戊", { exact: true })).toBeVisible();
 });

@@ -11,13 +11,19 @@ import { ReliabilityLab } from "./ReliabilityLab";
 import { RouterLab } from "./RouterLab";
 import { ValidatorPlayground } from "./ValidatorPlayground";
 
-function Section({ id, eyebrow, title, lead, children }: { id: string; eyebrow: string; title: string; lead: ReactNode; children: ReactNode }) {
+function Section({ id, n, kicker, title, lead, children }: { id: string; n: string; kicker: string; title: string; lead: ReactNode; children: ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-24 border-t border-white/5 py-14">
-      <p className="eyebrow">{eyebrow}</p>
-      <h2 className="display mt-2 text-3xl text-balance sm:text-4xl">{title}</h2>
-      <div className="mt-3 max-w-3xl text-mist-400">{lead}</div>
-      <div className="mt-8">{children}</div>
+    <section id={id} className="scroll-mt-20 border-t border-ink pb-16 pt-6">
+      <div className="grid gap-3 lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-10">
+        <p className="label pt-2">
+          <span className="text-accent">§{n}</span> · {kicker}
+        </p>
+        <div>
+          <h2 className="display text-[2rem] sm:text-[2.5rem]">{title}</h2>
+          <div className="mt-4 max-w-[46rem] text-[1.08rem] leading-relaxed text-ink-2">{lead}</div>
+        </div>
+      </div>
+      <div className="mt-10">{children}</div>
     </section>
   );
 }
@@ -39,32 +45,46 @@ export default function LabPage() {
   const simInvalid = simulation.grid.reduce((s, c) => s + c.invalidShipped, 0);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-20 pt-10 sm:px-6 sm:pt-16">
-      <p className="eyebrow">How it works</p>
-      <h1 className="display mt-3 max-w-4xl text-4xl leading-tight text-balance sm:text-5xl">An LLM you can check: the engineering behind a tarot reading</h1>
-      <p className="mt-5 max-w-3xl text-lg leading-relaxed text-mist-400">
-        Tarot is a playful domain with a serious ML-engineering core: a language model must interpret facts it did not choose, in a strict format, without inventing anything —
-        and fail safely when it does. Every component on this page is live code running in your browser, the same code the Cloudflare Worker runs.
+    <div className="mx-auto max-w-6xl px-4 pb-20 pt-10 sm:px-6 sm:pt-14">
+      <p className="label">How it works</p>
+      <h1 className="display mt-5 max-w-[52rem] text-[2.6rem] sm:text-[3.7rem]">An LLM you can check</h1>
+      <p className="lede mt-5 max-w-[46rem]">
+        Tarot is a playful domain with a serious engineering core: a language model has to interpret facts it did not choose, in a strict format, without inventing
+        anything — and fail safely when it does. Everything on this page is live code running in your browser, the same code the Cloudflare Worker runs.
       </p>
 
-      <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-12 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
         <StatTile label="Invalid outputs shipped" value={`${simInvalid} / ${simRequests.toLocaleString()}`} caption="simulated requests at 10–70% model failure rates; bad outputs are repaired or replaced" />
-        <StatTile label="Card selection by the LLM" value="0%" caption="cards come from a seeded, verifiable shuffle; the model only ever sees the result" />
-        <StatTile label={`Crisis recall (${splits.test ? "blind test" : "dev"})`} value={`${(router.crisis.recall.served * 100).toFixed(0)}%`} caption="question router: trained classifier + high-precision rules" />
+        <StatTile label="Cards chosen by the LLM" value="0" caption="a seeded, verifiable shuffle deals the cards; the model only sees the result" />
+        <StatTile label={`Crisis recall · ${splits.test ? "blind test" : "dev"}`} value={`${(router.crisis.recall.served * 100).toFixed(1)}%`} caption="question router: a trained classifier plus high-precision rules" />
         <StatTile label="Four Pillars vs. reference" value="100%" caption="agreement with lunar-python on 4,000 random birth times" />
       </div>
 
-      <nav aria-label="On this page" className="mt-10 flex flex-wrap gap-2">
-        {TOC.map(([id, label]) => (
-          <a key={id} href={`#/lab/${id}`} onClick={(e) => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); }} className="chip transition hover:border-gold-400/40 hover:text-mist-100">
-            {label}
-          </a>
-        ))}
+      <nav aria-label="On this page" className="mb-14 mt-14 border-t border-rule pt-5">
+        <p className="label">Contents</p>
+        <ol className="mt-3 grid gap-x-8 gap-y-1.5 sm:grid-cols-2 lg:grid-cols-4">
+          {TOC.map(([id, label], i) => (
+            <li key={id}>
+              <a
+                href={`#/lab/${id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="group flex items-baseline gap-3 text-[1.02rem] text-ink transition-colors hover:text-accent"
+              >
+                <span className="font-mono text-[0.72rem] text-accent">§{i + 1}</span>
+                <span className="underline decoration-rule-2 underline-offset-4 group-hover:decoration-accent">{label}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
       </nav>
 
       <Section
         id="architecture"
-        eyebrow="1 · Architecture"
+        n="1"
+        kicker="Architecture"
         title="Deterministic facts in, validated interpretation out"
         lead={
           <>
@@ -78,7 +98,8 @@ export default function LabPage() {
 
       <Section
         id="contract"
-        eyebrow="2 · Output contract"
+        n="2"
+        kicker="Output contract"
         title="Break the output and watch the validator react"
         lead={
           <>
@@ -92,7 +113,8 @@ export default function LabPage() {
 
       <Section
         id="reliability"
-        eyebrow="3 · Bounded retries"
+        n="3"
+        kicker="Bounded retries"
         title="How many retries buy how much reliability"
         lead={
           <>
@@ -107,7 +129,8 @@ export default function LabPage() {
 
       <Section
         id="router"
-        eyebrow="4 · Question router"
+        n="4"
+        kicker="Question router"
         title="A 0.1 ms model in front of a 70B model"
         lead={
           <>
@@ -122,7 +145,8 @@ export default function LabPage() {
 
       <Section
         id="draw"
-        eyebrow="5 · Draw engine"
+        n="5"
+        kicker="Draw engine"
         title="A shuffle you can replay and audit"
         lead={
           <>
@@ -136,7 +160,8 @@ export default function LabPage() {
 
       <Section
         id="evals"
-        eyebrow="6 · Evaluation"
+        n="6"
+        kicker="Evaluation"
         title="An offline harness for the real model"
         lead={
           <>
@@ -150,7 +175,8 @@ export default function LabPage() {
 
       <Section
         id="monitoring"
-        eyebrow="7 · Monitoring"
+        n="7"
+        kicker="Monitoring"
         title="Every request leaves a trace"
         lead={
           <>
@@ -162,13 +188,13 @@ export default function LabPage() {
         <LiveMetrics />
       </Section>
 
-      <p className="border-t border-white/5 pt-10 text-sm text-mist-500">
+      <p className="border-t border-rule pt-6 text-[1rem] text-ink-2">
         Source, tests and the ML scripts are on{" "}
-        <a className="text-gold-300 hover:underline" href={REPO_URL} target="_blank" rel="noreferrer">
+        <a className="link" href={REPO_URL} target="_blank" rel="noreferrer">
           GitHub
         </a>
         . Start with{" "}
-        <a className="font-mono text-xs text-gold-300/80 hover:underline" href={codeLink("src/core/orchestrate.ts")} target="_blank" rel="noreferrer">
+        <a className="link font-mono text-[0.85rem]" href={codeLink("src/core/orchestrate.ts")} target="_blank" rel="noreferrer">
           src/core/orchestrate.ts
         </a>
         , the single request path shared by every runtime.

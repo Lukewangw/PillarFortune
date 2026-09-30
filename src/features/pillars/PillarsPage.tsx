@@ -1,4 +1,3 @@
-import { CalendarClock, Info, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
   BaziInputError,
@@ -15,12 +14,20 @@ import {
 } from "../../core/bazi";
 import { codeLink } from "../../lib/config";
 
+/** Ink for characters (text contrast on paper) and the matching chart marks (see styles.css). */
 const ELEMENT_COLOR: Record<Element, string> = {
   wood: "var(--color-wood)",
   fire: "var(--color-fire)",
   earth: "var(--color-earth)",
   metal: "var(--color-metal)",
   water: "var(--color-water)",
+};
+const ELEMENT_MARK: Record<Element, string> = {
+  wood: "var(--viz-wood)",
+  fire: "var(--viz-fire)",
+  earth: "var(--viz-earth)",
+  metal: "var(--viz-metal)",
+  water: "var(--viz-water)",
 };
 
 const PILLAR_LABEL: Record<string, [string, string]> = {
@@ -75,44 +82,45 @@ function withoutHour(chart: BaziChart) {
   return { counts, scores };
 }
 
-function PillarColumn({ pillar, dayMaster }: { pillar: Pillar; dayMaster: boolean }) {
+function PillarColumn({ pillar, dayMaster, edge }: { pillar: Pillar; dayMaster: boolean; edge: string }) {
   const [zh, en] = PILLAR_LABEL[pillar.position];
   return (
-    <div className={`panel flex flex-col items-center px-2 py-5 text-center sm:px-4 ${dayMaster ? "!border-gold-400/50 shadow-[var(--shadow-glow)]" : ""}`}>
-      <p className="text-xs text-mist-400">
-        {zh} <span className="text-mist-500">· {en}</span>
+    <div
+      className={`relative flex flex-col items-center border-rule px-2 pb-5 pt-4 text-center sm:px-4 ${edge} ${dayMaster ? "bg-paper-2" : ""}`}
+      data-pillar={pillar.position}
+    >
+      <p className="text-[0.95rem] text-ink">
+        {zh} <span className="label ml-1">{en}</span>
       </p>
-      <p className="mt-3 h-8 text-[11px] leading-tight text-mist-400">
+      <p className="mt-3 flex h-9 flex-col items-center justify-center text-[0.8rem] leading-tight text-ink-3">
         {pillar.tenGod ? (
           <>
-            {pillar.tenGod.chinese}
-            <br />
-            <span className="text-mist-500">{pillar.tenGod.english}</span>
+            <span className="text-ink-2">{pillar.tenGod.chinese}</span>
+            <span className="text-[0.72rem] italic">{pillar.tenGod.english}</span>
           </>
         ) : (
-          <span className="font-medium text-gold-300">
-            日主
-            <br />
-            Day Master
-          </span>
+          <>
+            <span className="seal !h-5 !w-auto !rotate-0 px-1 !text-[0.7rem]">日主</span>
+            <span className="mt-0.5 text-[0.72rem] italic text-accent">Day Master</span>
+          </>
         )}
       </p>
-      <p className="mt-3 font-display text-5xl leading-none sm:text-6xl" style={{ color: ELEMENT_COLOR[pillar.stem.element] }}>
+      <p data-pillar-char className="mt-4 text-[3.4rem] leading-none sm:text-[4.4rem]" style={{ color: ELEMENT_COLOR[pillar.stem.element] }}>
         {pillar.stem.char}
       </p>
-      <p className="mt-1 text-[11px] text-mist-400">
+      <p className="mt-2 text-[0.8rem] italic text-ink-3">
         {pillar.stem.pinyin} · {pillar.stem.english}
       </p>
-      <p className="mt-4 font-display text-5xl leading-none sm:text-6xl" style={{ color: ELEMENT_COLOR[pillar.branch.element] }}>
+      <p data-pillar-char className="mt-5 text-[3.4rem] leading-none sm:text-[4.4rem]" style={{ color: ELEMENT_COLOR[pillar.branch.element] }}>
         {pillar.branch.char}
       </p>
-      <p className="mt-1 text-[11px] text-mist-400">
+      <p className="mt-2 text-[0.8rem] italic text-ink-3">
         {pillar.branch.pinyin} · {pillar.branch.animal}
       </p>
-      <div className="mt-4 flex flex-wrap justify-center gap-1.5 border-t border-white/5 pt-3">
+      <div className="mt-5 flex w-full flex-wrap justify-center gap-x-3 gap-y-1 border-t border-rule pt-3">
         {pillar.hiddenStems.map((hidden) => (
-          <span key={hidden.stem.char} className="text-center text-[10px] leading-tight text-mist-500" title={`${hidden.role} qi · ${hidden.tenGod.english}`}>
-            <span className="block text-base" style={{ color: ELEMENT_COLOR[hidden.stem.element] }}>
+          <span key={hidden.stem.char} className="text-center text-[0.68rem] leading-tight text-ink-3" title={`${hidden.role} qi · ${hidden.tenGod.english}`}>
+            <span className="block text-[1.15rem]" style={{ color: ELEMENT_COLOR[hidden.stem.element] }}>
               {hidden.stem.char}
             </span>
             {hidden.tenGod.chinese}
@@ -154,116 +162,128 @@ export default function PillarsPage() {
   const pillars = chart ? (timeKnown ? [chart.pillars.year, chart.pillars.month, chart.pillars.day, chart.pillars.hour] : [chart.pillars.year, chart.pillars.month, chart.pillars.day]) : [];
 
   return (
-    <section className="mx-auto max-w-5xl px-4 pb-20 pt-10 sm:px-6 sm:pt-16">
-      <p className="eyebrow flex items-center gap-2">
-        <CalendarClock className="h-3.5 w-3.5" /> 八字 · Four Pillars of Destiny
-      </p>
-      <h1 className="display mt-3 text-4xl sm:text-5xl">Your birth chart, computed from the sky</h1>
-      <p className="mt-4 max-w-2xl text-mist-400">
-        The four pillars come from the solar calendar: the year turns at 立春 when the Sun reaches 315°, months turn at the twelve 节 solar terms, days count through the
-        sixty-day cycle. Everything here is deterministic astronomy and calendar arithmetic — no randomness, no language model.
+    <section className="mx-auto max-w-6xl px-4 pb-20 pt-10 sm:px-6 sm:pt-14">
+      <p className="label">八字 · Four Pillars of Destiny</p>
+      <h1 className="display mt-5 max-w-[46rem] text-[2.6rem] sm:text-[3.7rem]">Your birth chart, computed from the sky</h1>
+      <p className="lede mt-5 max-w-[42rem]">
+        The four pillars come from the solar calendar: the year turns at 立春, when the Sun reaches 315°; months turn at the twelve 节 terms; days count through the
+        sixty-day cycle. It is astronomy and arithmetic — no randomness and no language model.
       </p>
 
-      <form className="panel mt-8 grid gap-4 p-5 sm:grid-cols-[1fr_1fr_1.4fr] sm:p-6" onSubmit={(e) => e.preventDefault()}>
-        <label className="text-sm">
-          <span className="eyebrow">Birth date</span>
+      <form className="mt-10 grid gap-5 border-t border-rule pt-6 sm:grid-cols-[1fr_1fr_1.4fr]" onSubmit={(e) => e.preventDefault()}>
+        <label className="block">
+          <span className="label">Birth date</span>
           <input type="date" required min="1901-01-01" max="2099-12-31" value={date} onChange={(e) => setDate(e.target.value)} className="field mt-2" />
         </label>
-        <label className="text-sm">
-          <span className="eyebrow">Birth time</span>
-          <input type="time" value={time} disabled={!timeKnown} onChange={(e) => setTime(e.target.value)} className="field mt-2 disabled:opacity-40" />
-          <span className="mt-2 flex items-center gap-2 text-xs text-mist-400">
-            <input type="checkbox" checked={!timeKnown} onChange={(e) => setTimeKnown(!e.target.checked)} className="accent-[var(--color-gold-400)]" />
+        <label className="block">
+          <span className="label">Birth time</span>
+          <input type="time" value={time} disabled={!timeKnown} onChange={(e) => setTime(e.target.value)} className="field mt-2" />
+          <span className="mt-2 flex items-center gap-2 text-[0.9rem] text-ink-3">
+            <input type="checkbox" checked={!timeKnown} onChange={(e) => setTimeKnown(!e.target.checked)} className="accent-[var(--color-accent)]" />
             I don't know my birth time
           </span>
         </label>
-        <label className="text-sm">
-          <span className="eyebrow">Birthplace time zone</span>
+        <label className="block">
+          <span className="label">Birthplace time zone</span>
           <select value={zone} onChange={(e) => setZone(e.target.value)} className="field mt-2">
             {zones.map((z) => (
-              <option key={z} value={z} className="bg-ink-900">
+              <option key={z} value={z}>
                 {z.replace(/_/g, " ")}
               </option>
             ))}
           </select>
-          {result && !result.error && <span className="mt-2 block text-xs text-mist-500">{fmtOffset(result.offset)} on that date, including historical daylight saving.</span>}
+          {result && !result.error && <span className="mt-2 block text-[0.9rem] text-ink-3">{fmtOffset(result.offset)} on that date, including historical daylight saving.</span>}
         </label>
       </form>
 
-      {result?.error && <p className="mt-6 text-sm text-bad-400">{result.error}</p>}
+      {result?.error && (
+        <p className="mt-6 text-[0.95rem] text-bad" role="alert">
+          {result.error}
+        </p>
+      )}
 
       {chart && tallies && insight && (
         <>
-          <div className={`mt-10 grid gap-3 sm:gap-4 ${timeKnown ? "grid-cols-2 md:grid-cols-4" : "grid-cols-3"}`}>
-            {pillars.map((p) => (
-              <PillarColumn key={p.position} pillar={p} dayMaster={p.position === "day"} />
+          <div className={`mt-12 grid border-y border-ink ${timeKnown ? "grid-cols-2 md:grid-cols-4" : "grid-cols-3"}`}>
+            {pillars.map((p, i) => (
+              <PillarColumn
+                key={p.position}
+                pillar={p}
+                dayMaster={p.position === "day"}
+                edge={
+                  i === 0
+                    ? ""
+                    : timeKnown && i === 2
+                      ? "max-md:border-t md:border-l" // starts the second row on narrow screens
+                      : timeKnown && i === 3
+                        ? "border-l max-md:border-t"
+                        : "border-l"
+                }
+              />
             ))}
           </div>
-          {!timeKnown && <p className="mt-3 text-center text-xs text-mist-500">Hour pillar omitted. Births between 23:00 and midnight would also belong to the next day's pillar.</p>}
+          {!timeKnown && <p className="mt-3 text-[0.9rem] italic text-ink-3">Hour pillar omitted. Births between 23:00 and midnight would also belong to the next day's pillar.</p>}
 
-          <div className="mt-8 grid gap-4 md:grid-cols-[1.1fr_1fr]">
-            <div className="panel p-6">
-              <p className="eyebrow flex items-center gap-2">
-                <Sparkles className="h-3.5 w-3.5" /> Day Master {chart.dayMaster.char}
-              </p>
-              <h2 className="display mt-2 text-3xl">{insight.title}</h2>
-              <p className="mt-3 leading-relaxed text-mist-300">{insight.text}</p>
-              <p className="mt-4 text-xs text-mist-500">
+          <div className="mt-12 grid gap-12 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:gap-16">
+            <div>
+              <p className="label">Day Master {chart.dayMaster.char}</p>
+              <h2 className="display mt-3 text-[2rem] sm:text-[2.4rem]">{insight.title}</h2>
+              <p className="mt-4 text-[1.05rem] leading-relaxed text-ink-2">{insight.text}</p>
+              <p className="mt-4 text-[0.9rem] italic text-ink-3">
                 Month governed by {chart.solarTerm.name} {chart.solarTerm.english} · {HEAVENLY_STEMS[chart.dayMaster.index].english} Day Master · solar year {chart.solarYear}
               </p>
             </div>
-            <div className="panel p-6">
-              <p className="eyebrow">Five-element balance</p>
-              <ul className="mt-4 space-y-3">
+            <div className="viz">
+              <p className="label">Five-element balance</p>
+              <ul className="mt-4 border-t border-ink">
                 {ELEMENTS.map((element) => (
-                  <li key={element} className="grid grid-cols-[4.5rem_1fr_2.5rem] items-center gap-3 text-sm">
-                    <span className="text-mist-300">
-                      <span style={{ color: ELEMENT_COLOR[element] }} className="mr-1.5 font-display text-lg">
+                  <li key={element} className="grid grid-cols-[5.5rem_1fr_2.5rem] items-center gap-3 border-b border-rule py-2.5">
+                    <span className="text-[0.95rem] text-ink-2">
+                      <span style={{ color: ELEMENT_COLOR[element] }} className="mr-2 text-[1.2rem]">
                         {ELEMENT_INFO[element].chinese}
                       </span>
                       {ELEMENT_INFO[element].english}
                     </span>
-                    <span className="h-2.5 rounded-full bg-white/5">
-                      <span className="block h-full rounded-full" style={{ width: `${(tallies.scores[element] / maxScore) * 100}%`, background: ELEMENT_COLOR[element] }} />
+                    <span className="h-2 bg-paper-3">
+                      <span className="block h-full" style={{ width: `${(tallies.scores[element] / maxScore) * 100}%`, background: ELEMENT_MARK[element] }} />
                     </span>
-                    <span className="text-right tabular-nums text-mist-400" title={`${tallies.counts[element]} visible characters`}>
+                    <span className="text-right font-mono text-[0.8rem] tabular-nums text-ink" title={`${tallies.counts[element]} visible characters`}>
                       {tallies.scores[element]}
                     </span>
                   </li>
                 ))}
               </ul>
-              <p className="mt-4 text-[11px] text-mist-500">Weighted: visible stems 1.0, hidden stems 1.0 / 0.5 / 0.3 (main / middle / residual qi).</p>
+              <p className="mt-3 text-[0.82rem] italic text-ink-3">Weighted: visible stems 1.0; hidden stems 1.0 / 0.5 / 0.3 (main, middle and residual qi).</p>
             </div>
           </div>
 
-          <div className="panel mt-4 p-6">
-            <p className="eyebrow">Reading the balance</p>
-            <ul className="mt-3 space-y-2 text-sm leading-relaxed text-mist-300">
-              {balance.slice(1).map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-            <p className="mt-3 text-xs text-mist-500">{balance[0]}</p>
+          <div className="mt-12 grid gap-12 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:gap-16">
+            <div>
+              <p className="label">Reading the balance</p>
+              <ul className="mt-3 space-y-2.5 text-[1.02rem] leading-relaxed text-ink-2">
+                {balance.slice(1).map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+              <p className="mt-3 text-[0.9rem] italic text-ink-3">{balance[0]}</p>
+            </div>
+            <details className="self-start border-t border-rule pt-3">
+              <summary className="label cursor-pointer transition-colors hover:!text-ink">How this chart was computed</summary>
+              <ul className="mt-4 list-disc space-y-2 pl-5 text-[0.92rem] leading-relaxed text-ink-2">
+                {chart.notes.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+                <li>
+                  The Sun's apparent longitude uses Meeus' higher-accuracy solar theory. Against the ephem library, solar-term instants for 1950–2050 are within 0.53 minutes;
+                  the pillars agree with the lunar-python reference on 4,000 random birth times from 1901–2099.{" "}
+                  <a className="link" href={codeLink("src/core/bazi/chart.ts")} target="_blank" rel="noreferrer">
+                    Read the code
+                  </a>
+                  .
+                </li>
+              </ul>
+            </details>
           </div>
-
-          <details className="panel mt-4 p-6">
-            <summary className="flex cursor-pointer items-center gap-2 text-sm text-mist-300">
-              <Info className="h-4 w-4 text-gold-300" /> How this chart was computed
-            </summary>
-            <ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-relaxed text-mist-400">
-              {chart.notes.map((note) => (
-                <li key={note}>{note}</li>
-              ))}
-              <li>
-                The Sun's apparent longitude uses Meeus' higher-accuracy solar theory. Against the ephem library, solar-term instants for 1950–2050 are within 0.53 minutes; the
-                pillars agree with the lunar-python reference on 4,000 random birth times from 1901–2099.{" "}
-                <a className="text-gold-300 underline-offset-4 hover:underline" href={codeLink("src/core/bazi/chart.ts")} target="_blank" rel="noreferrer">
-                  Read the code
-                </a>
-                .
-              </li>
-            </ul>
-          </details>
         </>
       )}
     </section>
