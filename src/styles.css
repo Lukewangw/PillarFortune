@@ -85,6 +85,9 @@
     background: var(--color-night);
     -webkit-tap-highlight-color: transparent;
     text-size-adjust: 100%;
+    /* No double-tap zoom on phones (pinch zoom still works), and never a sideways scroll. */
+    touch-action: manipulation;
+    overflow-x: clip;
   }
   body {
     min-height: 100dvh;
@@ -92,7 +95,9 @@
     font-size: 1.0625rem;
     line-height: 1.6;
     color: var(--color-star);
-    background: radial-gradient(120% 80% at 50% -15%, #0f1b3c 0%, #070d22 40%, #03060f 75%, #010207 100%) fixed, #03050c;
+    /* The night gradient lives on the fixed backdrop: iOS Safari ignores background-attachment: fixed. */
+    background: #03050c;
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     font-kerning: normal;

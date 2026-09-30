@@ -10,7 +10,7 @@ import { useEffect, useRef } from "react";
  */
 export function CelestialBackdrop() {
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[radial-gradient(120%_80%_at_50%_-15%,#0f1b3c_0%,#070d22_40%,#03060f_75%,#010207_100%)]">
       <StarCanvas />
       <div className="absolute left-1/2 top-[-26vmin] w-[min(1300px,155vmin)] -translate-x-1/2 opacity-30">
         <ZodiacWheel className="w-full animate-orbit" />
