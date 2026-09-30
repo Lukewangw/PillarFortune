@@ -86,7 +86,7 @@ function PillarColumn({ pillar, dayMaster, edge }: { pillar: Pillar; dayMaster: 
   const [zh, en] = PILLAR_LABEL[pillar.position];
   return (
     <div
-      className={`relative flex flex-col items-center border-line px-2 pb-5 pt-4 text-center sm:px-4 ${edge} ${dayMaster ? "bg-night-2" : ""}`}
+      className={`relative flex flex-col items-center border-line px-2 pb-5 pt-4 text-center sm:px-4 ${edge} ${dayMaster ? "bg-[radial-gradient(ellipse_at_50%_42%,rgb(214_179_112_/_0.16),transparent_70%)]" : ""}`}
       data-pillar={pillar.position}
     >
       <p className="text-[0.95rem] text-star">
@@ -174,7 +174,7 @@ export default function PillarsPage() {
         </p>
       </div>
 
-      <form className="frame mt-10 grid gap-5 px-5 pb-6 pt-7 sm:grid-cols-[1fr_1fr_1.4fr] sm:px-8" onSubmit={(e) => e.preventDefault()}>
+      <form className="mx-auto mt-10 grid max-w-4xl gap-7 sm:grid-cols-[1fr_1fr_1.4fr]" onSubmit={(e) => e.preventDefault()}>
         <label className="block">
           <span className="label">Birth date</span>
           <input type="date" required min="1901-01-01" max="2099-12-31" value={date} onChange={(e) => setDate(e.target.value)} className="field mt-2" />
@@ -208,7 +208,7 @@ export default function PillarsPage() {
 
       {chart && tallies && insight && (
         <>
-          <div className={`frame mt-8 grid overflow-hidden ${timeKnown ? "grid-cols-2 md:grid-cols-4" : "grid-cols-3"}`}>
+          <div className={`mt-14 grid ${timeKnown ? "grid-cols-2 md:grid-cols-4" : "grid-cols-3"}`}>
             {pillars.map((p, i) => (
               <PillarColumn
                 key={p.position}

@@ -48,7 +48,7 @@ export function ReadingView({
   const date = new Date(reading.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
 
   return (
-    <article className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
+    <article className="mx-auto max-w-5xl overflow-x-clip px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
       <header className="animate-rise text-center">
         <p className="label">
           ✦ &nbsp;{spread.name} · {date}&nbsp; ✦
@@ -56,8 +56,8 @@ export function ReadingView({
         <h1 className="display mx-auto mt-5 max-w-[46rem] text-[2rem] italic leading-[1.2] sm:text-[2.75rem]">“{reading.question}”</h1>
       </header>
 
-      <figure className="frame relative mx-auto mt-10 overflow-hidden px-3 pb-7 pt-10 sm:px-10 sm:pb-9 sm:pt-12">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,rgb(214_179_112_/_0.13),transparent_62%)]" aria-hidden="true" />
+      <figure className="relative mx-auto mt-8 px-1 pb-4 pt-8 sm:pt-10">
+        <div className="pointer-events-none absolute -inset-x-10 -inset-y-6 bg-[radial-gradient(ellipse_at_50%_48%,rgb(214_179_112_/_0.16),transparent_60%)]" aria-hidden="true" />
         <div className="relative">
           <SpreadLayout
             spread={draw.spread}
@@ -155,18 +155,19 @@ export function ReadingView({
           })}
         </ol>
 
-        <div className="mt-14 grid gap-4 sm:grid-cols-2">
-          <section className="frame px-6 pb-6 pt-7">
+        <div className="mt-16 grid gap-10 text-center sm:grid-cols-2 sm:gap-0">
+          <section className="sm:px-8">
             <h3 className="label">☀ &nbsp;What to do</h3>
-            <p className="mt-3 text-[1.02rem] leading-relaxed text-star-2">{interpretation.advice}</p>
+            <p className="mt-3 text-[1.04rem] leading-relaxed text-star-2">{interpretation.advice}</p>
           </section>
-          <section className="frame px-6 pb-6 pt-7">
+          <section className="sm:border-l sm:border-line-2 sm:px-8">
             <h3 className="label !text-warn">☾ &nbsp;What to watch</h3>
-            <p className="mt-3 text-[1.02rem] leading-relaxed text-star-2">{interpretation.caution}</p>
+            <p className="mt-3 text-[1.04rem] leading-relaxed text-star-2">{interpretation.caution}</p>
           </section>
         </div>
 
-        <div className="mt-14">
+        <div className="mt-20">
+          <p className="divider label mb-10" aria-hidden="true">✦</p>
           <ChatPanel
             draw={draw}
             entries={chat}

@@ -55,7 +55,7 @@ export function ChatPanel({
   const unused = suggestions.filter((s) => !entries.some((e) => e.role === "user" && e.content === s));
 
   return (
-    <section aria-label="Follow-up conversation" className="frame px-5 pb-6 pt-8 sm:px-9 sm:pb-8 sm:pt-10">
+    <section aria-label="Follow-up conversation" className="relative">
       <div className="text-center">
         <p className="label">✦ &nbsp;Continue the reading&nbsp; ✦</p>
         <h2 className="display mt-3 text-[1.9rem]">Ask a follow-up</h2>

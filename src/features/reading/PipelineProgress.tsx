@@ -40,7 +40,7 @@ export function PipelineProgress({ modelLabel, trace }: { modelLabel: string; tr
     : null;
 
   return (
-    <div className="frame mx-auto mt-10 max-w-md px-6 pb-6 pt-7" role="status" aria-live="polite">
+    <div className="mx-auto mt-10 max-w-md" role="status" aria-live="polite">
       <p className="label text-center">✦ &nbsp;Consulting the cards&nbsp; ✦</p>
       <ol className="mt-4 space-y-2.5">
         {STEPS.map((step, i) => {

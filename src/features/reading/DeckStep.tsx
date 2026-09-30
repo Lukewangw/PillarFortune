@@ -175,7 +175,7 @@ export function DeckStep({
                   } as React.CSSProperties
                 }
               >
-                <span className="block h-full w-full transition-transform duration-200 group-enabled:group-hover:[transform:translateY(var(--lift))] group-enabled:group-focus-visible:[transform:translateY(var(--lift))]">
+                <span className="block h-full w-full transition-transform duration-200 group-enabled:group-hover:[transform:translateY(var(--lift))] group-enabled:group-focus-visible:[transform:translateY(var(--lift))] group-enabled:group-hover:[filter:drop-shadow(0_0_10px_rgb(240_220_170_/_0.75))]">
                   <CardBack className={`h-full w-full ${CARD_SHADOW}`} />
                 </span>
               </button>

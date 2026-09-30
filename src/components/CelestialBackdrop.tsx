@@ -2,28 +2,24 @@ import { useEffect, useRef } from "react";
 
 /**
  * The night sky behind every page:
- *  - a star field in which some stars breathe, one star glints every second or two and a
- *    meteor crosses now and then (all static under prefers-reduced-motion);
+ *  - a star field in which some stars breathe, bursts of glints flare at random places, a
+ *    meteor crosses now and then and the pointer leaves stardust (static under reduced motion);
  *  - a zodiac wheel in gold line work, like the chart embroidered on a reading cloth,
- *    turning once every twelve minutes;
- *  - a few constellations, a vignette and a faint velvet grain.
+ *    turning once every six minutes;
+ *  - a few constellations and a soft vignette.
  */
 export function CelestialBackdrop() {
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       <StarCanvas />
-      <div className="absolute left-1/2 top-[-26vmin] w-[min(1300px,155vmin)] -translate-x-1/2 opacity-[0.16]">
+      <div className="absolute left-1/2 top-[-26vmin] w-[min(1300px,155vmin)] -translate-x-1/2 opacity-[0.2]">
         <ZodiacWheel className="w-full animate-orbit" />
       </div>
       <Constellations />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,transparent_45%,rgb(3_5_12_/_0.72)_100%)]" />
-      <div className="absolute inset-0 opacity-[0.06] mix-blend-overlay" style={{ backgroundImage: GRAIN }} />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_30%,transparent_55%,rgb(2_4_12_/_0.55)_100%)]" />
     </div>
   );
 }
-
-const GRAIN =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
 /* ---------- star field ---------- */
 
@@ -43,6 +39,7 @@ interface Glint {
   start: number;
   life: number;
   tilt: number;
+  warm: boolean;
 }
 interface Meteor {
   x: number;
@@ -52,7 +49,21 @@ interface Meteor {
   start: number;
   life: number;
 }
+interface Dust {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  start: number;
+  life: number;
+}
 
+/**
+ * Stars breathe; every second or two a burst of 2–6 glints flares at random places (a few
+ * large); a bright meteor crosses every 6–14 s; and moving the pointer leaves a trail of
+ * stardust. Everything is static under prefers-reduced-motion and pauses in hidden tabs.
+ */
 function StarCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
 
@@ -63,13 +74,15 @@ function StarCanvas() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let stars: Star[] = [];
     let glints: Glint[] = [];
-    let meteor: Meteor | null = null;
-    let nextGlint = 0;
+    let meteors: Meteor[] = [];
+    let dust: Dust[] = [];
+    let nextBurst = 0;
     let nextMeteor = 0;
     let frame = 0;
     let last = 0;
     let w = 0;
     let h = 0;
+    let lastPointer: { x: number; y: number; t: number } | null = null;
 
     const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
@@ -82,51 +95,49 @@ function StarCanvas() {
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const count = Math.min(520, Math.round((w * h) / 4200));
+      const count = Math.min(560, Math.round((w * h) / 3800));
       stars = Array.from({ length: count }, () => {
-        const bright = Math.random() < 0.08;
+        const bright = Math.random() < 0.09;
         const pick = Math.random();
         return {
           x: Math.random() * w,
           y: Math.random() * h,
-          r: bright ? rand(1.0, 1.6) : rand(0.25, 0.95),
-          a: bright ? rand(0.7, 1) : rand(0.18, 0.7),
-          twinkle: Math.random() < 0.4 ? rand(0.5, 1.6) : 0,
+          r: bright ? rand(1.0, 1.7) : rand(0.3, 1.0),
+          a: bright ? rand(0.75, 1) : rand(0.25, 0.75),
+          twinkle: Math.random() < 0.45 ? rand(0.6, 1.8) : 0,
           phase: Math.random() * Math.PI * 2,
-          color: pick < 0.74 ? "255 246 224" : pick < 0.9 ? "214 228 255" : "240 220 170",
+          color: pick < 0.72 ? "255 247 228" : pick < 0.9 ? "210 226 255" : "243 222 168",
         };
       });
       if (reduce) draw(0);
     };
 
-    const drawGlint = (g: Glint, t: number) => {
-      const p = (t - g.start) / g.life;
-      if (p < 0 || p > 1) return;
-      const k = Math.sin(Math.PI * p);
-      const s = g.size * (0.55 + 0.45 * k);
+    const flare = (x: number, y: number, size: number, k: number, tilt: number, warm: boolean) => {
       ctx.save();
-      ctx.translate(g.x, g.y);
-      ctx.rotate(g.tilt);
+      ctx.translate(x, y);
+      ctx.rotate(tilt);
       ctx.globalCompositeOperation = "lighter";
-      const halo = ctx.createRadialGradient(0, 0, 0, 0, 0, s * 0.9);
-      halo.addColorStop(0, `rgb(255 244 214 / ${0.55 * k})`);
-      halo.addColorStop(1, "rgb(255 244 214 / 0)");
+      const tint = warm ? "255 226 160" : "220 232 255";
+      const halo = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 1.3);
+      halo.addColorStop(0, `rgb(255 250 235 / ${0.9 * k})`);
+      halo.addColorStop(0.25, `rgb(${tint} / ${0.45 * k})`);
+      halo.addColorStop(1, `rgb(${tint} / 0)`);
       ctx.fillStyle = halo;
       ctx.beginPath();
-      ctx.arc(0, 0, s * 0.9, 0, Math.PI * 2);
+      ctx.arc(0, 0, size * 1.3, 0, Math.PI * 2);
       ctx.fill();
       for (const [len, width, rot] of [
-        [s * 2.2, 1.1, 0],
-        [s * 2.2, 1.1, Math.PI / 2],
-        [s * 1.1, 0.7, Math.PI / 4],
-        [s * 1.1, 0.7, -Math.PI / 4],
+        [size * 3, 1.6, 0],
+        [size * 3, 1.6, Math.PI / 2],
+        [size * 1.4, 0.9, Math.PI / 4],
+        [size * 1.4, 0.9, -Math.PI / 4],
       ] as const) {
         ctx.save();
         ctx.rotate(rot);
         const grad = ctx.createLinearGradient(-len, 0, len, 0);
-        grad.addColorStop(0, "rgb(255 240 200 / 0)");
-        grad.addColorStop(0.5, `rgb(255 248 228 / ${0.95 * k})`);
-        grad.addColorStop(1, "rgb(255 240 200 / 0)");
+        grad.addColorStop(0, `rgb(${tint} / 0)`);
+        grad.addColorStop(0.5, `rgb(255 252 240 / ${k})`);
+        grad.addColorStop(1, `rgb(${tint} / 0)`);
         ctx.strokeStyle = grad;
         ctx.lineWidth = width;
         ctx.beginPath();
@@ -138,59 +149,104 @@ function StarCanvas() {
       ctx.restore();
     };
 
+    const drawGlint = (g: Glint, t: number) => {
+      const p = (t - g.start) / g.life;
+      if (p < 0 || p > 1) return;
+      const k = Math.sin(Math.PI * p) ** 1.5;
+      flare(g.x, g.y, g.size * (0.5 + 0.5 * k), k, g.tilt + p * 0.6, g.warm);
+    };
+
     const drawMeteor = (m: Meteor, t: number) => {
       const p = (t - m.start) / m.life;
       if (p < 0 || p > 1) return;
       const head = { x: m.x + m.dx * p, y: m.y + m.dy * p };
-      const tail = { x: head.x - m.dx * 0.28, y: head.y - m.dy * 0.28 };
-      const fade = Math.sin(Math.PI * p);
+      const tail = { x: head.x - m.dx * 0.35, y: head.y - m.dy * 0.35 };
+      const fade = Math.min(1, Math.sin(Math.PI * p) * 1.4);
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
       const grad = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
       grad.addColorStop(0, "rgb(240 220 170 / 0)");
-      grad.addColorStop(1, `rgb(255 248 230 / ${0.85 * fade})`);
+      grad.addColorStop(0.7, `rgb(250 236 200 / ${0.45 * fade})`);
+      grad.addColorStop(1, `rgb(255 252 240 / ${fade})`);
       ctx.strokeStyle = grad;
-      ctx.lineWidth = 1.3;
       ctx.lineCap = "round";
+      ctx.lineWidth = 2.2;
       ctx.beginPath();
       ctx.moveTo(tail.x, tail.y);
       ctx.lineTo(head.x, head.y);
       ctx.stroke();
+      ctx.restore();
+      flare(head.x, head.y, 5, fade, 0, true);
     };
 
     const draw = (t: number) => {
       ctx.clearRect(0, 0, w, h);
       for (const s of stars) {
-        const alpha = s.twinkle && !reduce ? s.a * (0.55 + 0.45 * Math.sin(s.phase + (t / 1000) * s.twinkle)) : s.a;
+        const alpha = s.twinkle && !reduce ? s.a * (0.5 + 0.5 * Math.sin(s.phase + (t / 1000) * s.twinkle)) : s.a;
         ctx.fillStyle = `rgb(${s.color} / ${alpha.toFixed(3)})`;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         ctx.fill();
       }
       if (reduce) return;
+      for (const d of dust) {
+        const p = (t - d.start) / d.life;
+        if (p < 0 || p > 1) continue;
+        const k = 1 - p;
+        flare(d.x + d.vx * p * 40, d.y + d.vy * p * 40, d.size * k, k * 0.9, p * 2, true);
+      }
       for (const g of glints) drawGlint(g, t);
-      if (meteor) drawMeteor(meteor, t);
+      for (const m of meteors) drawMeteor(m, t);
     };
 
     const tick = (t: number) => {
       frame = requestAnimationFrame(tick);
-      if (t - last < 33) return; // ~30 fps is plenty for a sky
+      if (t - last < 30) return;
       last = t;
-      if (t >= nextGlint && stars.length) {
-        const candidates = stars.filter((s) => s.r > 0.8);
-        const s = candidates[Math.floor(Math.random() * candidates.length)] ?? stars[0];
-        glints.push({ x: s.x, y: s.y, size: rand(6, 13), start: t, life: rand(900, 1500), tilt: rand(-0.3, 0.3) });
-        nextGlint = t + rand(700, 2200);
+      if (t >= nextBurst) {
+        const n = 2 + Math.floor(Math.random() * 5);
+        for (let i = 0; i < n; i++) {
+          const big = Math.random() < 0.18;
+          glints.push({
+            x: rand(0.02, 0.98) * w,
+            y: rand(0.02, 0.95) * h,
+            size: big ? rand(16, 24) : rand(7, 13),
+            start: t + rand(0, 700),
+            life: rand(900, 1600),
+            tilt: rand(-0.4, 0.4),
+            warm: Math.random() < 0.7,
+          });
+        }
+        nextBurst = t + rand(900, 2400);
       }
       glints = glints.filter((g) => t - g.start < g.life);
       if (t >= nextMeteor) {
         if (nextMeteor > 0) {
-          const angle = rand(0.35, 0.65);
-          const len = rand(220, 360);
-          meteor = { x: rand(w * 0.1, w * 0.8), y: rand(0, h * 0.45), dx: Math.cos(angle) * len, dy: Math.sin(angle) * len, start: t, life: rand(700, 1000) };
+          const angle = rand(0.3, 0.7);
+          const len = rand(380, 620);
+          const fromLeft = Math.random() < 0.5;
+          meteors.push({
+            x: fromLeft ? rand(0, w * 0.55) : rand(w * 0.45, w),
+            y: rand(-20, h * 0.4),
+            dx: Math.cos(angle) * len * (fromLeft ? 1 : -1),
+            dy: Math.sin(angle) * len,
+            start: t,
+            life: rand(800, 1200),
+          });
         }
-        nextMeteor = t + rand(14000, 28000);
+        nextMeteor = t + rand(6000, 14000);
       }
-      if (meteor && t - meteor.start > meteor.life) meteor = null;
+      meteors = meteors.filter((m) => t - m.start < m.life);
+      dust = dust.filter((d) => t - d.start < d.life);
       draw(t);
+    };
+
+    const onPointer = (e: PointerEvent) => {
+      const t = performance.now();
+      if (lastPointer && Math.hypot(e.clientX - lastPointer.x, e.clientY - lastPointer.y) < 14 && t - lastPointer.t < 60) return;
+      lastPointer = { x: e.clientX, y: e.clientY, t };
+      if (dust.length > 90) dust.shift();
+      dust.push({ x: e.clientX + rand(-6, 6), y: e.clientY + rand(-6, 6), vx: rand(-0.4, 0.4), vy: rand(0.2, 0.9), size: rand(2.5, 5.5), start: t, life: rand(700, 1100) });
     };
 
     const onVisibility = () => {
@@ -201,10 +257,14 @@ function StarCanvas() {
     resize();
     window.addEventListener("resize", resize);
     document.addEventListener("visibilitychange", onVisibility);
-    if (!reduce) frame = requestAnimationFrame(tick);
+    if (!reduce) {
+      window.addEventListener("pointermove", onPointer, { passive: true });
+      frame = requestAnimationFrame(tick);
+    }
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);

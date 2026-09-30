@@ -48,7 +48,8 @@
   --animate-riffle: riffle 1.35s ease-in-out both;
   --animate-deal-in: deal-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) both;
   --animate-rise: rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  --animate-orbit: orbit 720s linear infinite;
+  --animate-orbit: orbit 360s linear infinite;
+  --animate-burst: burst 0.9s cubic-bezier(0.15, 0.7, 0.3, 1) forwards;
   --animate-shimmer: shimmer 3.2s ease-in-out infinite;
 
   @keyframes riffle {
@@ -63,6 +64,11 @@
   @keyframes rise {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: none; }
+  }
+  @keyframes burst {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2) rotate(0deg); }
+    15% { opacity: 1; }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1) rotate(90deg); }
   }
   @keyframes orbit {
     to { transform: rotate(360deg); }
@@ -86,7 +92,7 @@
     font-size: 1.0625rem;
     line-height: 1.6;
     color: var(--color-star);
-    background: radial-gradient(120% 80% at 50% 0%, #15203d 0%, #0c1224 45%, #070a15 100%) fixed, var(--color-night);
+    background: radial-gradient(130% 95% at 50% -12%, #1c3066 0%, #0d1838 38%, #070c1f 72%, #04070f 100%) fixed, var(--color-night);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     font-kerning: normal;
@@ -211,6 +217,25 @@
     border-color: #f6e6bb #c9a45c #9c7a37;
     box-shadow: 0 1px 0 rgb(255 255 255 / 0.35) inset, 0 10px 26px -12px rgb(214 179 112 / 0.7);
   }
+  .btn-primary {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.55) 50%, transparent 70%);
+    transform: translateX(-130%);
+    transition: transform 0.75s ease;
+    pointer-events: none;
+  }
+  .btn-primary:hover:not(:disabled)::after {
+    transform: translateX(130%);
+  }
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(1px);
+  }
   .btn-primary:hover:not(:disabled) {
     filter: brightness(1.07);
     box-shadow: 0 1px 0 rgb(255 255 255 / 0.4) inset, 0 12px 32px -10px rgb(214 179 112 / 0.85), 0 0 22px -4px rgb(240 220 170 / 0.45);
@@ -234,14 +259,16 @@
     color: var(--color-gold-2);
   }
 
+  /* Inputs are written on the cloth: a gold underline, no box. */
   .field {
     width: 100%;
-    border: 1px solid var(--color-line-2);
-    border-radius: 3px;
-    background: rgb(7 10 21 / 0.6);
-    padding: 0.75rem 0.9rem;
+    border: 0;
+    border-bottom: 1px solid var(--color-line-2);
+    border-radius: 0;
+    background: transparent;
+    padding: 0.7rem 0.15rem;
     color: var(--color-star);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
   .field::placeholder {
     color: var(--color-star-3);
@@ -250,8 +277,8 @@
   }
   .field:focus {
     outline: none;
-    border-color: var(--color-gold);
-    box-shadow: 0 0 0 3px rgb(214 179 112 / 0.16), 0 0 24px -8px rgb(214 179 112 / 0.5);
+    border-color: var(--color-gold-2);
+    box-shadow: 0 10px 18px -14px rgb(240 220 170 / 0.7);
   }
   .field:disabled {
     opacity: 0.5;
@@ -276,19 +303,10 @@
   }
 
   /* Velvet panel with a double gold rule and a star at each corner, like a tarot box. */
+  /* Open section: no box. Sections are separated by space, ornaments and light, not borders. */
   .frame {
     position: relative;
     min-width: 0;
-    border: 1px solid var(--color-line-2);
-    background:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 L5.9 4.1 L10 5 L5.9 5.9 L5 10 L4.1 5.9 L0 5 L4.1 4.1 Z' fill='%23d6b370'/%3E%3C/svg%3E") 7px 7px / 9px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 L5.9 4.1 L10 5 L5.9 5.9 L5 10 L4.1 5.9 L0 5 L4.1 4.1 Z' fill='%23d6b370'/%3E%3C/svg%3E") calc(100% - 7px) 7px / 9px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 L5.9 4.1 L10 5 L5.9 5.9 L5 10 L4.1 5.9 L0 5 L4.1 4.1 Z' fill='%23d6b370'/%3E%3C/svg%3E") 7px calc(100% - 7px) / 9px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 L5.9 4.1 L10 5 L5.9 5.9 L5 10 L4.1 5.9 L0 5 L4.1 4.1 Z' fill='%23d6b370'/%3E%3C/svg%3E") calc(100% - 7px) calc(100% - 7px) / 9px no-repeat,
-      linear-gradient(180deg, rgb(21 31 58 / 0.78), rgb(13 19 38 / 0.82));
-    outline: 1px solid rgb(214 179 112 / 0.16);
-    outline-offset: -6px;
-    box-shadow: 0 20px 50px -30px rgb(0 0 0 / 0.9);
   }
   /* A raised sheet: drawers and dense technical panels. */
   .sheet {

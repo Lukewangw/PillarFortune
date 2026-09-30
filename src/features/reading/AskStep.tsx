@@ -80,7 +80,7 @@ export function AskStep(props: {
           if (valid) onContinue();
         }}
       >
-        <div className="frame p-2 transition-shadow focus-within:shadow-[0_0_0_1px_rgb(214_179_112_/_0.6),0_0_40px_-10px_rgb(214_179_112_/_0.55)] sm:p-3">
+        <div className="group relative">
           <label htmlFor="question" className="sr-only">
             Your question
           </label>
@@ -91,10 +91,15 @@ export function AskStep(props: {
             onKeyDown={(e) => {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && valid) onContinue();
             }}
-            rows={3}
+            rows={2}
             maxLength={QUESTION_LIMITS.max}
             placeholder="How should I approach the decision about moving cities?"
-            className="block w-full resize-none bg-transparent px-4 py-4 text-[1.3rem] leading-snug text-star outline-none placeholder:italic placeholder:text-star-3 sm:px-6 sm:text-[1.45rem]"
+            className="block w-full resize-none bg-transparent px-2 pb-4 pt-2 text-center text-[1.45rem] leading-snug text-star outline-none placeholder:italic placeholder:text-star-3/80 sm:text-[1.7rem]"
+          />
+          <span className="block h-px w-full bg-[linear-gradient(90deg,transparent,rgb(214_179_112_/_0.55),transparent)]" aria-hidden="true" />
+          <span
+            className="pointer-events-none absolute inset-x-[15%] -bottom-px block h-[2px] origin-center scale-x-0 bg-[linear-gradient(90deg,transparent,#f0dcaa,transparent)] shadow-[0_0_18px_rgb(240_220_170_/_0.8)] transition-transform duration-500 group-focus-within:scale-x-100"
+            aria-hidden="true"
           />
         </div>
         <div className="mt-3 flex min-h-5 flex-wrap items-baseline justify-center gap-x-4 gap-y-1 text-center font-mono text-[0.7rem] leading-relaxed text-star-3">
@@ -167,15 +172,23 @@ export function AskStep(props: {
                   type="button"
                   onClick={() => setSpread(id)}
                   aria-pressed={active}
-                  className={`frame flex flex-col items-center px-4 pb-5 pt-6 text-center transition-[box-shadow,border-color] ${
-                    active ? "!border-gold shadow-[0_0_36px_-12px_rgb(214_179_112_/_0.7)]" : "hover:!border-gold/60"
-                  }`}
+                  className="group relative flex flex-col items-center px-4 pb-4 pt-5 text-center"
                 >
-                  <span className="flex h-[4.4rem] items-center justify-center">
+                  <span
+                    className={`pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(closest-side,rgb(214_179_112_/_0.2),transparent)] transition-opacity duration-500 ${
+                      active ? "opacity-100" : "opacity-0 group-hover:opacity-50"
+                    }`}
+                    aria-hidden="true"
+                  />
+                  <span className="relative flex h-[4.4rem] items-center justify-center transition-transform duration-300 group-hover:-translate-y-1">
                     <SpreadDiagram spread={id} active={active} />
                   </span>
-                  <span className={`inscription mt-3 block text-[0.95rem] ${active ? "!text-gold-2" : ""}`}>{def.name}</span>
-                  <span className="mt-1.5 block text-[0.88rem] leading-snug text-star-3">{def.tagline}</span>
+                  <span className={`inscription relative mt-3 block text-[0.95rem] transition-colors ${active ? "!text-gold-2" : "group-hover:!text-gold-2"}`}>{def.name}</span>
+                  <span className="relative mt-1.5 block max-w-[15rem] text-[0.88rem] leading-snug text-star-3">{def.tagline}</span>
+                  <span
+                    className={`relative mt-3 block h-1.5 w-1.5 rotate-45 bg-gold transition-opacity ${active ? "opacity-100" : "opacity-0"}`}
+                    aria-hidden="true"
+                  />
                 </button>
               );
             })}

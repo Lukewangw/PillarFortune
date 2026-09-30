@@ -44,13 +44,13 @@ Chart colours in `.viz` were checked with the dataviz palette validator against 
   - Every 0.7–2.2 s one bright star glints with a four-ray flare.
   - A meteor crosses every 14–28 s.
   - It pauses when the tab is hidden, and under `prefers-reduced-motion` it is a still image.
-- The zodiac wheel is inline SVG at 16% opacity and turns once every twelve minutes.
+- The zodiac wheel is inline SVG at 16% opacity and turns once every six minutes.
 - A vignette and a 6% grain give the velvet depth.
 
 ## Rules
 
 1. The base is navy. Purple appears nowhere.
 2. Gold is line work first: rules, rings, stars and foil text. Filled gold is reserved for the primary action and the card borders.
-3. Containers are either a gold-framed velvet panel (`.frame`, a double rule with a star at each corner) or nothing at all. There are no glass cards or pills.
+3. No boxes. Sections are separated by space, ornamental dividers, hairlines and soft gold light. Inputs are underlines on the cloth. There are no glass cards or pills.
 4. The reading pages are centred and symmetric, like cards on a cloth. The technical report (Lab) is left-aligned inside a centred frame.
 5. Motion is limited to the sky, the shuffle, the deal and the flip.
