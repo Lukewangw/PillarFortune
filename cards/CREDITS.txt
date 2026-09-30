@@ -1,0 +1,8 @@
+Card illustrations: Pamela Colman Smith, for the Rider–Waite–Smith tarot deck
+(published by William Rider & Son, London, 1909). The artwork is in the public
+domain: it was published before 1929 in the United States, and the artist died
+in 1951.
+
+These digital scans come from the npm package @cometpisces/tarot-kit-images
+(version 0.2.0). For this project they were cropped to remove the scan border
+and re-encoded as WebP.
