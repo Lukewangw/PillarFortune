@@ -44,7 +44,7 @@ Chart colours in `.viz` were checked with the dataviz palette validator against 
   - Every 0.7–2.2 s one bright star glints with a four-ray flare.
   - A meteor crosses every 14–28 s.
   - It pauses when the tab is hidden, and under `prefers-reduced-motion` it is a still image.
-- The zodiac wheel is inline SVG at 16% opacity and turns once every six minutes.
+- The zodiac wheel is inline SVG at 50% opacity (about half the brightness of the text) and turns once every six minutes.
 - A vignette and a 6% grain give the velvet depth.
 
 ## Rules
