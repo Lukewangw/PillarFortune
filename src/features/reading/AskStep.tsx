@@ -196,7 +196,7 @@ export function AskStep(props: {
         </fieldset>
 
         <div className="mt-12 flex flex-col items-center gap-3">
-          <button type="submit" disabled={!valid} className="btn btn-primary !min-h-[3.75rem] !gap-3 !px-14 !text-[0.95rem] !tracking-[0.2em] [&_svg]:!h-[1.15rem] [&_svg]:!w-[1.15rem]">
+          <button type="submit" disabled={!valid} className="btn btn-primary !min-h-[3.75rem] !gap-3 !px-14 !text-[0.95rem] !tracking-[0.2em] [&_svg]:!h-[1.15rem] [&_svg]:!w-[1.15rem] sm:!min-h-[5rem] sm:!gap-4 sm:!px-24 sm:!text-[1.3rem] sm:!tracking-[0.22em] sm:[&_svg]:!h-[1.6rem] sm:[&_svg]:!w-[1.6rem]">
             Shuffle the deck <ArrowRight className="nudge" />
           </button>
           <span className="text-[0.88rem] text-star-3">
