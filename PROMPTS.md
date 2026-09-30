@@ -46,3 +46,23 @@ This document records representative prompts used to accelerate development of `
 - AI-generated drafts were edited for project-specific naming (`cf_ai_pillarfortune`) and endpoint contracts.
 - Safety constraints and deterministic/LLM separation were explicitly reviewed.
 - Final code structure and documentation reflect human-reviewed integration choices, not raw AI output.
+
+---
+
+## v2 revision (September 2026) — AI-assisted
+
+The v2 rewrite was produced with Claude Code, starting from the request to bring the project in line with its resume description, deploy it publicly, polish the interaction design, and emphasize ML engineering over full-stack plumbing. Representative prompts and decisions:
+
+### Architecture and reliability
+- "Separate deterministic card selection from interpretation so the server can recompute any draw from (seed, picks) and the LLM never chooses a card."
+- "Generate a JSON Schema per draw with enums of the drawn card ids and positions; constrain decoding with the structural part and validate lengths, pairings, undrawn-card mentions and tone afterwards, with JSON-pointer errors that double as the repair prompt."
+- "Bound retries by attempts, deadline and a daily budget; degrade from constrained to unconstrained decoding when the provider cannot meet the schema; end every path in an output that passes the same validator."
+- "Build a fault-injection provider that corrupts correct outputs the way real models fail, and use it for tests, a reliability sweep and an in-browser simulator."
+
+### Data and models
+- Router training data, the dev set and a separate blind test set were written by independent AI agents that could not see each other's files; a second, targeted batch of training data was written after error analysis on dev. The blind test set was scored once, after the model was frozen.
+- The 78 card meanings were written as original text for this project; the BaZi calculator was cross-checked against the `ephem` and `lunar_python` reference libraries.
+
+### Human-facing decisions
+- Crisis handling uses a two-tier gate (explicit statements → support only; uncertain detections → support plus the choice to continue), with the operating point chosen as "maximize recall subject to ≤ 5% false alarms".
+- Simulated results are labeled as simulated; real-model evaluation results are only published from real runs.

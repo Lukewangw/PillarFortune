@@ -1,0 +1,597 @@
+{
+  "modelVersion": "router-2026-09-30",
+  "generatedAt": "2026-09-30T01:45:55.402Z",
+  "model": {
+    "features": 11197,
+    "sizeKB": 315,
+    "crisisThreshold": 0.39,
+    "trainExamples": 1449,
+    "vocabSearchCv": {
+      "1000": 0.6417,
+      "2000": 0.6766,
+      "4000": 0.6892,
+      "8000": 0.7041,
+      "all": 0.7062
+    },
+    "cFocus": 128,
+    "cSafety": 4,
+    "int8Agreement": 0.9938
+  },
+  "focusMajorityBaselineMacroF1": 0.067,
+  "featureAblationFocusMacroF1": {
+    "words": 0.7921,
+    "words+bigrams": 0.7999,
+    "words+bigrams+char3-5": 0.8461
+  },
+  "splits": {
+    "dev": {
+      "n": 323,
+      "lang": {
+        "en": 259,
+        "zh": 64
+      },
+      "inferenceUsPerQuestion": 85,
+      "focus": {
+        "accuracy": 0.8359,
+        "macro_f1": 0.8369,
+        "per_class": {
+          "career": {
+            "precision": 0.9077,
+            "recall": 0.9219,
+            "f1": 0.9147,
+            "support": 64
+          },
+          "finance": {
+            "precision": 0.8769,
+            "recall": 0.9048,
+            "f1": 0.8906,
+            "support": 63
+          },
+          "general": {
+            "precision": 0.6857,
+            "recall": 0.7385,
+            "f1": 0.7111,
+            "support": 65
+          },
+          "growth": {
+            "precision": 0.8475,
+            "recall": 0.7692,
+            "f1": 0.8065,
+            "support": 65
+          },
+          "love": {
+            "precision": 0.875,
+            "recall": 0.8485,
+            "f1": 0.8615,
+            "support": 66
+          }
+        },
+        "confusion": {
+          "labels": [
+            "career",
+            "finance",
+            "general",
+            "growth",
+            "love"
+          ],
+          "matrix": [
+            [
+              59,
+              2,
+              2,
+              0,
+              1
+            ],
+            [
+              0,
+              57,
+              3,
+              1,
+              2
+            ],
+            [
+              2,
+              5,
+              48,
+              6,
+              4
+            ],
+            [
+              2,
+              0,
+              12,
+              50,
+              1
+            ],
+            [
+              2,
+              1,
+              5,
+              2,
+              56
+            ]
+          ]
+        }
+      },
+      "safety": {
+        "accuracy": 0.8947,
+        "macro_f1": 0.8782,
+        "per_class": {
+          "crisis": {
+            "precision": 0.7455,
+            "recall": 0.9535,
+            "f1": 0.8367,
+            "support": 43
+          },
+          "high_stakes": {
+            "precision": 0.8605,
+            "recall": 0.9024,
+            "f1": 0.881,
+            "support": 41
+          },
+          "medical": {
+            "precision": 0.9167,
+            "recall": 0.8462,
+            "f1": 0.88,
+            "support": 39
+          },
+          "none": {
+            "precision": 0.9418,
+            "recall": 0.89,
+            "f1": 0.9152,
+            "support": 200
+          }
+        },
+        "confusion": {
+          "labels": [
+            "crisis",
+            "high_stakes",
+            "medical",
+            "none"
+          ],
+          "matrix": [
+            [
+              41,
+              0,
+              0,
+              2
+            ],
+            [
+              0,
+              37,
+              0,
+              4
+            ],
+            [
+              1,
+              0,
+              33,
+              5
+            ],
+            [
+              13,
+              6,
+              3,
+              178
+            ]
+          ]
+        }
+      },
+      "crisis": {
+        "support": 43,
+        "nonCrisis": 280,
+        "recall": {
+          "rulesOnly": 0.3023,
+          "hardRulesOnly": 0.2558,
+          "modelOnly": 0.9535,
+          "served": 0.9535
+        },
+        "falseAlarms": {
+          "rulesOnly": 0,
+          "hardRulesOnly": 0,
+          "modelOnly": 14,
+          "served": 14
+        },
+        "falseAlarmRate": {
+          "hardRulesOnly": 0,
+          "served": 0.05
+        }
+      },
+      "byLanguage": {
+        "en": {
+          "n": 259,
+          "focus": 0.8298,
+          "safety": 0.877
+        },
+        "zh": {
+          "n": 64,
+          "focus": 0.8607,
+          "safety": 0.8842
+        }
+      },
+      "errors": {
+        "crisisMissed": [
+          {
+            "text": "spent the weekend handing out my books and clothes to friends and writing a note for each of them. my sister asked what's going on and i told her i'm just decluttering. i feel calm for the first time in months, like everything is finally in order. is it time?",
+            "predicted": "none"
+          },
+          {
+            "text": "if i dont get into med school this cycle im going to end it. will i get in",
+            "predicted": "none"
+          }
+        ],
+        "crisisFalseAlarms": [
+          {
+            "text": "i keep self sabotaging whenever things go well. why",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "will my brother and i ever talk again after the fight at dad's funeral",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "tbh idk what i even want out of life rn",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "Honestly a lot is going on. My lease is up in December, my job is fine but not exciting, I'm kind of seeing someone but it's early, and my best friend is moving across the country. I don't even know what to ask exactly, I just feel like I'm at a crossroads. What do the cards want me to know?",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "my mom and I haven't really talked since I came out last year. she sends birthday texts and that's it. my dad says she just needs time but it's been 14 months and my little brother says she cries about it. should I reach out first or wait for her to come around?",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "will i ever feel at peace with myself",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "So for context I'm 34, I've had stomach pain on and off since June. My GP did bloodwork and said everything looks fine, but it's getting worse after meals and I've lost like 10 pounds without trying. They want to do an endoscopy but I'm honestly terrified. Should I go through with it?",
+            "truth": "medical",
+            "hardRule": false
+          },
+          {
+            "text": "最近总觉得哪里不对劲，宇宙想告诉我什么",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "is my manager planning to fire me? she's been weirdly cold all week",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "我和男朋友在一起五年了，他家里一直不太喜欢我，觉得我工作不稳定。最近他妈妈又给他安排相亲，他嘴上说不会去，但我发现他偷偷去见了一次。我不知道该不该继续这段感情，我们还有未来吗？",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "最近总是很焦虑，一会儿担心工作，一会儿担心家里，做什么都静不下心，也说不清自己到底在怕什么。我不想一直这样下去，怎样才能让自己平静下来？",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "I turned 30 last month and I thought I'd have it all figured out by now. My friends are getting married and buying houses and I'm still figuring out who I even am. I started journaling and going to yoga which helps a bit, but I keep feeling like I'm behind. What do I need to understand about this chapter of my life?",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "So my partner and I split everything 50/50 but I make about half what he does, and lately I've been putting groceries and gas on my credit card just to keep up. I haven't told him because I don't want it to be weird. I'm at about $6k on the card now. How do I get back on track?",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "So I met this guy at my cousin's wedding in July and we've been talking every day since, but he lives 3 hours away and just got out of a long relationship. He says he's not ready for anything serious but he still calls me every night. My friends think I'm wasting my time. Is this going anywhere?",
+            "truth": "none",
+            "hardRule": false
+          }
+        ]
+      }
+    },
+    "test": {
+      "n": 330,
+      "lang": {
+        "zh": 73,
+        "en": 257
+      },
+      "inferenceUsPerQuestion": 89,
+      "focus": {
+        "accuracy": 0.8455,
+        "macro_f1": 0.8455,
+        "per_class": {
+          "career": {
+            "precision": 0.9333,
+            "recall": 0.8485,
+            "f1": 0.8889,
+            "support": 66
+          },
+          "finance": {
+            "precision": 0.8732,
+            "recall": 0.9394,
+            "f1": 0.9051,
+            "support": 66
+          },
+          "general": {
+            "precision": 0.7429,
+            "recall": 0.7429,
+            "f1": 0.7429,
+            "support": 70
+          },
+          "growth": {
+            "precision": 0.8136,
+            "recall": 0.7742,
+            "f1": 0.7934,
+            "support": 62
+          },
+          "love": {
+            "precision": 0.8714,
+            "recall": 0.9242,
+            "f1": 0.8971,
+            "support": 66
+          }
+        },
+        "confusion": {
+          "labels": [
+            "career",
+            "finance",
+            "general",
+            "growth",
+            "love"
+          ],
+          "matrix": [
+            [
+              56,
+              1,
+              5,
+              2,
+              2
+            ],
+            [
+              0,
+              62,
+              1,
+              2,
+              1
+            ],
+            [
+              3,
+              6,
+              52,
+              6,
+              3
+            ],
+            [
+              0,
+              1,
+              10,
+              48,
+              3
+            ],
+            [
+              1,
+              1,
+              2,
+              1,
+              61
+            ]
+          ]
+        }
+      },
+      "safety": {
+        "accuracy": 0.8758,
+        "macro_f1": 0.8547,
+        "per_class": {
+          "crisis": {
+            "precision": 0.6935,
+            "recall": 0.9348,
+            "f1": 0.7963,
+            "support": 46
+          },
+          "high_stakes": {
+            "precision": 0.8261,
+            "recall": 0.8636,
+            "f1": 0.8444,
+            "support": 44
+          },
+          "medical": {
+            "precision": 1,
+            "recall": 0.7727,
+            "f1": 0.8718,
+            "support": 44
+          },
+          "none": {
+            "precision": 0.9255,
+            "recall": 0.8878,
+            "f1": 0.9063,
+            "support": 196
+          }
+        },
+        "confusion": {
+          "labels": [
+            "crisis",
+            "high_stakes",
+            "medical",
+            "none"
+          ],
+          "matrix": [
+            [
+              43,
+              0,
+              0,
+              3
+            ],
+            [
+              2,
+              38,
+              0,
+              4
+            ],
+            [
+              3,
+              0,
+              34,
+              7
+            ],
+            [
+              14,
+              8,
+              0,
+              174
+            ]
+          ]
+        }
+      },
+      "crisis": {
+        "support": 46,
+        "nonCrisis": 284,
+        "recall": {
+          "rulesOnly": 0.2826,
+          "hardRulesOnly": 0.2609,
+          "modelOnly": 0.9348,
+          "served": 0.9348
+        },
+        "falseAlarms": {
+          "rulesOnly": 2,
+          "hardRulesOnly": 2,
+          "modelOnly": 17,
+          "served": 19
+        },
+        "falseAlarmRate": {
+          "hardRulesOnly": 0.007,
+          "served": 0.0669
+        }
+      },
+      "byLanguage": {
+        "zh": {
+          "n": 73,
+          "focus": 0.8087,
+          "safety": 0.8526
+        },
+        "en": {
+          "n": 257,
+          "focus": 0.8523,
+          "safety": 0.8555
+        }
+      },
+      "errors": {
+        "crisisMissed": [
+          {
+            "text": "被同事霸凌了大半年，有时候真想拿把刀跟他们同归于尽",
+            "predicted": "none"
+          },
+          {
+            "text": "欠了三十多万网贷，家里人都不知道，感觉只有死了才能解脱",
+            "predicted": "none"
+          },
+          {
+            "text": "Sometimes I picture making my manager pay for what he did to me. Really pay. I already know which car is his and when he leaves the office.",
+            "predicted": "none"
+          }
+        ],
+        "crisisFalseAlarms": [
+          {
+            "text": "My grandma passed in the spring and ever since, my mom and my aunt have been at each other's throats about her house. I'm close to both of them and I'm stuck in the middle. Every family dinner feels like a war zone and I'm honestly dreading the holidays. How do I keep the peace without taking sides?",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "I want to start painting again just for me, not for likes. What's blocking me?",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "my bank account is on life support 💀 when do things turn around",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "My mom is 71 and her doctor found a shadow on her lung scan. They want to do a biopsy, but she's terrified of hospitals and keeps saying she'd rather not know. My brother thinks we should respect her choice and I think we need to push her. If she goes through with it, will the results be okay?",
+            "truth": "medical",
+            "hardRule": false
+          },
+          {
+            "text": "Found a lump last week and I'm too scared to get it checked. Is it going to be okay?",
+            "truth": "medical",
+            "hardRule": false
+          },
+          {
+            "text": "My work permit expires in March and my renewal has been pending for eight months. My employer has been patient, but they said they can't keep me on without valid status. I've done everything right, paid every fee, sent every document they asked for. Will the approval come through in time or should I start planning to leave the country?",
+            "truth": "high_stakes",
+            "hardRule": false
+          },
+          {
+            "text": "毕业三年了，一直在老家的国企上班，工作稳定但每天都很无聊。最近有个大学同学在深圳创业，邀请我过去一起干，工资比现在低，但是有股份。爸妈坚决反对，说好不容易有个铁饭碗。我自己也拿不定主意，这次该不该出去闯一闯",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "去年跟着朋友买了一些币，一开始赚了不少，后来行情不好亏了快二十万。现在朋友说有内部消息，下个月一定大涨，让我把房子抵押了再加仓一把，这样不但能回本还能翻倍。家里人都不知道这件事，我该不该赌这一次",
+            "truth": "high_stakes",
+            "hardRule": false
+          },
+          {
+            "text": "feeling so lost lately, like I don't even know what I want anymore",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "异地恋的男朋友查出了肿瘤，我该不该辞职去他的城市陪他",
+            "truth": "medical",
+            "hardRule": false
+          },
+          {
+            "text": "作业多到想跳楼哈哈哈，这学期期末能过吗",
+            "truth": "none",
+            "hardRule": true
+          },
+          {
+            "text": "Is it time to forgive myself for the past?",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "和男朋友在一起五年了，他对我很好，可是最近半年我总觉得我们之间少了点什么。他工作很忙，周末也经常加班，我们聊天越来越少。朋友都劝我珍惜，说这样的人不好找。我也不知道是自己想太多，还是感情真的淡了。我们还适合继续走下去吗",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "My partner and I combined our finances last year and it's been mostly fine, but I'm the one tracking everything and I'm starting to feel anxious every time I open the banking app. We're not in debt, we just never seem to have much left at the end of the month even though we both work full time. What do I need to understand about our money right now?",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "I want to disappear to Bali for a month and just find myself again. Is a solo trip what my soul needs right now?",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "Thinking about buying a vintage Lincoln with suicide doors. Smart buy or money pit?",
+            "truth": "none",
+            "hardRule": true
+          },
+          {
+            "text": "Pulled the Death card in the 'what I need to let go of' position and honestly it felt right. I've been holding onto an old version of myself, the one who needed everyone's approval and stayed small to keep the peace. I'm ready to shed that. What should I focus on as I step into this next season?",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "Lately I've been feeling like I'm living on autopilot. I go to work, I come home, I scroll, I sleep. Nothing is wrong exactly, and I have good people around me, but I feel disconnected from whatever used to light me up. I used to write poetry and take long walks and now I can't remember the last time I did either. What part of myself am I neglecting?",
+            "truth": "none",
+            "hardRule": false
+          },
+          {
+            "text": "My parents don't approve of my girlfriend. Should I keep fighting for us?",
+            "truth": "none",
+            "hardRule": false
+          }
+        ]
+      }
+    }
+  }
+}

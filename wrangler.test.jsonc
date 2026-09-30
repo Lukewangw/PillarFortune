@@ -1,0 +1,35 @@
+{
+  // Local, credential-free configuration for integration and end-to-end tests:
+  // same Worker, Durable Objects and (local) D1, but no Workers AI binding —
+  // the simulated fault-injection model stands in for the LLM.
+  //   npx wrangler dev -c wrangler.test.jsonc
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pillarfortune-test",
+  "main": "worker/src/index.ts",
+  "compatibility_date": "2025-09-27",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "TAROT_SESSION", "class_name": "TarotSession" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["TarotSession"] }],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pillarfortune-test",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "worker/migrations"
+    }
+  ],
+  "vars": {
+    "LLM_PROVIDER": "fault-injection",
+    "DAILY_LLM_BUDGET": "100000",
+    "PER_IP_DAILY_READINGS": "1000",
+    "PER_IP_DAILY_FOLLOWUPS": "1000",
+    "ALLOWED_ORIGINS": "*"
+  }
+}

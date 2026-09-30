@@ -1,0 +1,40 @@
+name: Deploy to GitHub Pages
+
+# Publishes the static frontend to the gh-pages branch (served at https://lukewangw.github.io/PillarFortune/).
+# Set the repository variable PILLARFORTUNE_API_URL to the Worker URL to connect the live model;
+# without it the site runs the same pipeline in the browser with the offline and simulated engines.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build:pages
+        env:
+          VITE_API_BASE_URL: ${{ vars.PILLARFORTUNE_API_URL }}
+      - run: cp dist/index.html dist/404.html && touch dist/.nojekyll
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          force_orphan: true
+          commit_message: "Deploy ${{ github.sha }}"

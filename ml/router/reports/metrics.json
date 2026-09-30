@@ -1,0 +1,308 @@
+{
+  "version": "router-2026-09-30",
+  "data": {
+    "train": 1449,
+    "dev": 323,
+    "dev_texts_also_in_train": 1,
+    "train_focus": {
+      "love": 287,
+      "growth": 278,
+      "career": 286,
+      "finance": 278,
+      "general": 320
+    },
+    "train_safety": {
+      "none": 933,
+      "high_stakes": 144,
+      "crisis": 227,
+      "medical": 145
+    },
+    "dev_focus": {
+      "love": 66,
+      "finance": 63,
+      "growth": 65,
+      "general": 65,
+      "career": 64
+    },
+    "dev_safety": {
+      "high_stakes": 41,
+      "none": 200,
+      "medical": 39,
+      "crisis": 43
+    },
+    "dev_lang": {
+      "en": 259,
+      "zh": 64
+    }
+  },
+  "model": {
+    "features": 11197,
+    "min_df": 2,
+    "vocab_search_cv": {
+      "1000": 0.6417,
+      "2000": 0.6766,
+      "4000": 0.6892,
+      "8000": 0.7041,
+      "all": 0.7062
+    },
+    "vocab_k": 8000,
+    "c_focus": 128,
+    "c_safety": 4,
+    "cv_macro_f1_focus": {
+      "1": 0.6828,
+      "2": 0.6949,
+      "4": 0.6985,
+      "8": 0.6996,
+      "16": 0.6977,
+      "32": 0.6987,
+      "64": 0.7,
+      "128": 0.7015
+    },
+    "cv_macro_f1_safety": {
+      "1": 0.7592,
+      "2": 0.7605,
+      "4": 0.7607,
+      "8": 0.7551,
+      "16": 0.7519,
+      "32": 0.7544,
+      "64": 0.7552,
+      "128": 0.7488
+    },
+    "crisis_threshold": 0.39,
+    "crisis_threshold_rule": "max OOF recall s.t. false-alarm rate <= 0.05",
+    "crisis_oof_recall": 0.7797,
+    "crisis_oof_false_alarm_rate": 0.0483,
+    "int8_vs_float_focus_agreement": 0.9938,
+    "size_bytes": 322091
+  },
+  "dev": {
+    "focus": {
+      "accuracy": 0.8359,
+      "macro_f1": 0.8369,
+      "per_class": {
+        "career": {
+          "precision": 0.9077,
+          "recall": 0.9219,
+          "f1": 0.9147,
+          "support": 64
+        },
+        "finance": {
+          "precision": 0.8769,
+          "recall": 0.9048,
+          "f1": 0.8906,
+          "support": 63
+        },
+        "general": {
+          "precision": 0.6857,
+          "recall": 0.7385,
+          "f1": 0.7111,
+          "support": 65
+        },
+        "growth": {
+          "precision": 0.8475,
+          "recall": 0.7692,
+          "f1": 0.8065,
+          "support": 65
+        },
+        "love": {
+          "precision": 0.875,
+          "recall": 0.8485,
+          "f1": 0.8615,
+          "support": 66
+        }
+      },
+      "confusion": {
+        "labels": [
+          "career",
+          "finance",
+          "general",
+          "growth",
+          "love"
+        ],
+        "matrix": [
+          [
+            59,
+            2,
+            2,
+            0,
+            1
+          ],
+          [
+            0,
+            57,
+            3,
+            1,
+            2
+          ],
+          [
+            2,
+            5,
+            48,
+            6,
+            4
+          ],
+          [
+            2,
+            0,
+            12,
+            50,
+            1
+          ],
+          [
+            2,
+            1,
+            5,
+            2,
+            56
+          ]
+        ]
+      }
+    },
+    "focus_majority_baseline_macro_f1": 0.067,
+    "safety_argmax": {
+      "accuracy": 0.8978,
+      "macro_f1": 0.8811,
+      "per_class": {
+        "crisis": {
+          "precision": 0.7593,
+          "recall": 0.9535,
+          "f1": 0.8454,
+          "support": 43
+        },
+        "high_stakes": {
+          "precision": 0.8605,
+          "recall": 0.9024,
+          "f1": 0.881,
+          "support": 41
+        },
+        "medical": {
+          "precision": 0.9167,
+          "recall": 0.8462,
+          "f1": 0.88,
+          "support": 39
+        },
+        "none": {
+          "precision": 0.9421,
+          "recall": 0.895,
+          "f1": 0.9179,
+          "support": 200
+        }
+      },
+      "confusion": {
+        "labels": [
+          "crisis",
+          "high_stakes",
+          "medical",
+          "none"
+        ],
+        "matrix": [
+          [
+            41,
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            37,
+            0,
+            4
+          ],
+          [
+            1,
+            0,
+            33,
+            5
+          ],
+          [
+            12,
+            6,
+            3,
+            179
+          ]
+        ]
+      }
+    },
+    "safety_thresholded": {
+      "accuracy": 0.8947,
+      "macro_f1": 0.8782,
+      "per_class": {
+        "crisis": {
+          "precision": 0.7455,
+          "recall": 0.9535,
+          "f1": 0.8367,
+          "support": 43
+        },
+        "high_stakes": {
+          "precision": 0.8605,
+          "recall": 0.9024,
+          "f1": 0.881,
+          "support": 41
+        },
+        "medical": {
+          "precision": 0.9167,
+          "recall": 0.8462,
+          "f1": 0.88,
+          "support": 39
+        },
+        "none": {
+          "precision": 0.9418,
+          "recall": 0.89,
+          "f1": 0.9152,
+          "support": 200
+        }
+      },
+      "confusion": {
+        "labels": [
+          "crisis",
+          "high_stakes",
+          "medical",
+          "none"
+        ],
+        "matrix": [
+          [
+            41,
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            37,
+            0,
+            4
+          ],
+          [
+            1,
+            0,
+            33,
+            5
+          ],
+          [
+            13,
+            6,
+            3,
+            178
+          ]
+        ]
+      }
+    },
+    "by_language": {
+      "en": {
+        "n": 259,
+        "focus_macro_f1": 0.8298,
+        "safety_macro_f1": 0.877
+      },
+      "zh": {
+        "n": 64,
+        "focus_macro_f1": 0.8608,
+        "safety_macro_f1": 0.8842
+      }
+    },
+    "feature_ablation_focus_macro_f1": {
+      "words": 0.7921,
+      "words+bigrams": 0.7999,
+      "words+bigrams+char3-5": 0.8461
+    }
+  }
+}
