@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { preloadCards } from "../../components/CardArt";
 import { TraceDrawer } from "../../components/TraceDrawer";
 import type { ReadingDTO } from "../../core/contracts";
 import type { Trace } from "../../core/llm/trace";
@@ -60,6 +61,10 @@ export function ReadingPage({ readingId }: { readingId?: string }) {
 
   const n = SPREADS[spread].positions.length;
   const localDraw = useMemo(() => (seed && picks.length === n ? drawCards({ seed, spread, picks }) : null), [seed, spread, picks, n]);
+  // The faces are images: fetch them while the user is still turning the cards over.
+  useEffect(() => {
+    if (localDraw) preloadCards(localDraw.cards.map((c) => c.cardId));
+  }, [localDraw]);
   const verified = reading ? sameCards(reading.draw, drawCards({ seed: reading.draw.seed, spread: reading.draw.spread, picks: reading.draw.picks })) : null;
 
   const openReading = useCallback(
@@ -206,7 +211,7 @@ export function ReadingPage({ readingId }: { readingId?: string }) {
       {(phase === "reveal" || phase === "interpreting") && localDraw && (
         <section className="mx-auto max-w-5xl px-4 pb-16 pt-6 sm:px-6 sm:pt-8">
           <div className="flex items-baseline justify-between gap-3">
-            <button type="button" onClick={() => setPhase("ask")} disabled={phase === "interpreting"} className="label transition-colors hover:!text-ink disabled:opacity-40">
+            <button type="button" onClick={() => setPhase("ask")} disabled={phase === "interpreting"} className="label transition-colors hover:!text-star disabled:opacity-40">
               ← Start over
             </button>
             <p className="label">{SPREADS[spread].name}</p>
@@ -214,7 +219,7 @@ export function ReadingPage({ readingId }: { readingId?: string }) {
           <div className="mx-auto mt-8 max-w-2xl text-center">
             <p className="label">{allRevealed ? "Every card is face up" : "Tap a card to turn it over"}</p>
             <h2 className="display mt-3 text-[2.1rem] sm:text-[2.7rem]">{allRevealed ? "Your cards" : "Turn over your cards"}</h2>
-            <p className="mt-3 text-[1.05rem] italic leading-snug text-ink-2">“{question.trim()}”</p>
+            <p className="mt-3 text-[1.05rem] italic leading-snug text-star-2">“{question.trim()}”</p>
           </div>
           <div className="mt-10">
             <SpreadLayout
@@ -235,10 +240,10 @@ export function ReadingPage({ readingId }: { readingId?: string }) {
                       orientation={card.orientation}
                       revealed={isRevealed}
                       glow={!isRevealed}
-                      className={`${spread === "cross" ? "w-[4.6rem] sm:w-[5.6rem]" : "w-24 sm:w-32"} transition-transform duration-200 group-enabled:group-hover:-translate-y-1`}
+                      className={`${spread === "cross" ? "w-[4.8rem] sm:w-[6.2rem]" : spread === "single" ? "w-36 sm:w-44" : "w-[6.2rem] sm:w-40"} transition-transform duration-200 group-enabled:group-hover:-translate-y-1.5`}
                     />
-                    <span className="label mt-3 !text-ink">{card.positionLabel}</span>
-                    <span className={`mt-1 h-10 max-w-32 text-center text-[0.9rem] leading-tight ${isRevealed ? "text-ink-2" : "italic text-ink-3"}`}>
+                    <span className="label mt-3 !text-star">{card.positionLabel}</span>
+                    <span className={`mt-1 h-10 max-w-32 text-center text-[0.9rem] leading-tight ${isRevealed ? "text-star-2" : "italic text-star-3"}`}>
                       {isRevealed ? `${getCard(card.cardId).name}${card.orientation === "reversed" ? ", reversed" : ""}` : "face down"}
                     </span>
                   </button>

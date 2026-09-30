@@ -27,7 +27,7 @@ export function SpreadDiagram({ spread, active = false }: { spread: SpreadId; ac
         <div
           key={p.id}
           style={{ gridColumn: p.slot.col + 1, gridRow: p.slot.row + 1 }}
-          className={`rounded-[1.5px] border transition-colors ${active ? "border-accent bg-accent" : "border-ink-3 bg-paper-2"}`}
+          className={`rounded-[2px] border transition-colors ${active ? "border-gold-2 bg-gradient-to-b from-gold-2 to-gold-3 shadow-[0_0_10px_rgb(214_179_112_/_0.45)]" : "border-gold/45 bg-night/40"}`}
         />
       ))}
     </div>

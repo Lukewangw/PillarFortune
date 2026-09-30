@@ -66,14 +66,14 @@ export function DrawLab() {
         {result ? (
           <div className="mt-6">
             <Histogram values={result.counts} labels={CARDS.map((c) => c.name)} reference={result.n / DECK_SIZE} referenceLabel="expected 1,000" />
-            <p className="mt-3 text-[0.95rem] leading-relaxed text-ink-2">
-              χ² = <span className="font-mono text-[0.85rem] text-ink">{result.chi2.toFixed(1)}</span> with 77 degrees of freedom, p ≈{" "}
-              <span className="font-mono text-[0.85rem] text-ink">{result.p.toFixed(2)}</span> {result.p > 0.001 ? "— consistent with a uniform shuffle." : "— unusually far from uniform."}{" "}
+            <p className="mt-3 text-[0.95rem] leading-relaxed text-star-2">
+              χ² = <span className="font-mono text-[0.85rem] text-star">{result.chi2.toFixed(1)}</span> with 77 degrees of freedom, p ≈{" "}
+              <span className="font-mono text-[0.85rem] text-star">{result.p.toFixed(2)}</span> {result.p > 0.001 ? "— consistent with a uniform shuffle." : "— unusually far from uniform."}{" "}
               Reversed on top: {(result.reversedRate * 100).toFixed(1)}%. {Math.round(result.ms)} ms.
             </p>
           </div>
         ) : (
-          <p className="mt-4 text-[0.92rem] italic text-ink-3">The same test runs in CI on fixed seeds (χ² &lt; 121.2, the α = 0.001 critical value), together with determinism and seed-sensitivity checks.</p>
+          <p className="mt-4 text-[0.92rem] italic text-star-3">The same test runs in CI on fixed seeds (χ² &lt; 121.2, the α = 0.001 critical value), together with determinism and seed-sensitivity checks.</p>
         )}
       </Figure>
     </div>

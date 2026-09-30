@@ -37,10 +37,10 @@ export function LiveMetrics() {
 
   if (live.status !== "up") {
     return (
-      <div className="max-w-[46rem] border-t border-ink pt-4">
-        <p className="label !text-ink">Production monitoring</p>
-        <p className="mt-2 text-[1rem] leading-relaxed text-ink-2">
-          When this page is served by the Cloudflare Worker, this section shows live numbers from the <span className="font-mono text-[0.8rem] text-ink">llm_traces</span> table:
+      <div className="max-w-[46rem] border-t border-gold/50 pt-4">
+        <p className="label !text-star">Production monitoring</p>
+        <p className="mt-2 text-[1rem] leading-relaxed text-star-2">
+          When this page is served by the Cloudflare Worker, this section shows live numbers from the <span className="font-mono text-[0.8rem] text-star">llm_traces</span> table:
           validity at the first attempt, share served from the model, fallback rate and reasons, p50/p95 latency, tokens, and which validation checks fail most. This build is
           running without a backend, so there is nothing live to show.
         </p>

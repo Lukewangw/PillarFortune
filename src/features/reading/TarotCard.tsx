@@ -1,5 +1,5 @@
 import type { Orientation } from "../../core/tarot/types";
-import { CardBack, CardFace } from "../../components/CardArt";
+import { CARD_ASPECT, CardBack, CardFace } from "../../components/CardArt";
 
 /** A card that can flip from its back to its face; reversed cards show their face upside down. */
 export function TarotCard({
@@ -16,7 +16,7 @@ export function TarotCard({
   glow?: boolean;
 }) {
   return (
-    <div className={`${className} aspect-[3/5] [perspective:1100px]`}>
+    <div className={`${className} [perspective:1100px]`} style={{ aspectRatio: CARD_ASPECT }}>
       <div
         className={`relative h-full w-full transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] [transform-style:preserve-3d] ${
           revealed ? "[transform:rotateY(180deg)]" : ""

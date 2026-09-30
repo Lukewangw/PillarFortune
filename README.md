@@ -153,7 +153,7 @@ npm run eval:simulate                         # reliability sweep → ml/evals/r
 - **Pay for retries only when they help.** Normalization absorbs harmless deviations; temperature drops on each repair; the deadline and a daily call budget bound latency and cost; every path ends in an output that passes the same validator.
 - **Small model first.** A 0.1 ms classifier decides whether to call the 70B model at all and how, and it runs identically in the browser for instant feedback while typing.
 - **Honest evaluation.** Blind test scored once, dev used for error analysis, simulation labeled as simulation, real-model results only from real runs.
-- **Look like what it is.** The interface is set like a printed almanac — paper, ink and one vermilion accent, a serif for reading and a monospace for machinery — so the checkable parts (seeds, traces, validator findings) read as first-class content rather than decoration. Rules and references: [docs/DESIGN.md](docs/DESIGN.md).
+- **Look like what it is.** The interface is a tarot parlour after dark. Midnight velvet, a gold zodiac wheel turning slowly behind a star field that glints now and then, and the 1909 Rider–Waite–Smith deck in gold foil borders. The checkable parts (seeds, traces, validator findings, figures) are set in the same materials, so they read as part of the product. Rules and references: [docs/DESIGN.md](docs/DESIGN.md).
 
 ## Responsible use
 
@@ -161,4 +161,4 @@ Readings are for reflection and entertainment, not advice. Medical and high-stak
 
 ## Credits
 
-The card art is an original SVG deck drawn for this project in the manner of a printed Marseille deck, and the card meanings are original text. Typefaces: Newsreader (Production Type) and IBM Plex Mono, both under the SIL Open Font License. Development used AI assistance; see [PROMPTS.md](PROMPTS.md).
+Card faces are Pamela Colman Smith's illustrations for the Rider–Waite–Smith tarot (1909), which are in the public domain. The scans come from the npm package `@cometpisces/tarot-kit-images`, cropped and re-encoded for this project (see [public/cards/CREDITS.txt](public/cards/CREDITS.txt)). The card back, the zodiac wheel and the logo are original SVG, and the card meanings are original text. Typefaces: Cinzel, Newsreader and IBM Plex Mono, all under the SIL Open Font License. Development used AI assistance; see [PROMPTS.md](PROMPTS.md).

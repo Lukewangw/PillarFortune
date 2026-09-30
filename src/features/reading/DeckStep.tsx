@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { CardBack } from "../../components/CardArt";
+import { CARD_ASPECT, CardBack } from "../../components/CardArt";
 import { DECK_SIZE } from "../../core/tarot/deck";
 import { SHUFFLE_ALGORITHM } from "../../core/tarot/engine";
 import { SPREADS, type SpreadId } from "../../core/tarot/spreads";
@@ -20,11 +20,11 @@ function useWidth<T extends HTMLElement>() {
 }
 
 const prefersReducedMotion = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const CARD_SHADOW = "drop-shadow-[0_1px_1px_rgb(27_25_22/0.12)] drop-shadow-[0_6px_6px_rgb(27_25_22/0.16)]";
+const CARD_SHADOW = "drop-shadow-[0_2px_2px_rgb(0_0_0/0.5)] drop-shadow-[0_10px_12px_rgb(0_0_0/0.45)]";
 
 function ShuffleAnimation() {
   return (
-    <div className="relative mx-auto h-44 w-[6.6rem]" aria-hidden="true">
+    <div className="relative mx-auto h-[11.5rem] w-[6.4rem]" aria-hidden="true">
       {Array.from({ length: 12 }, (_, i) => (
         <div
           key={i}
@@ -84,7 +84,7 @@ export function DeckStep({
   // Arc geometry: card centres sit on a circle of radius R around a pivot below the container.
   const narrow = width < 640;
   const cardW = narrow ? 44 : 64;
-  const cardH = cardW * (5 / 3);
+  const cardH = cardW * (513 / 286);
   const maxAngle = (36 * Math.PI) / 180;
   const R = Math.max(160, (width - cardW - 24) / (2 * Math.sin(maxAngle)));
   const sagitta = R * (1 - Math.cos(maxAngle));
@@ -95,10 +95,10 @@ export function DeckStep({
   return (
     <section className="mx-auto max-w-6xl px-4 pb-16 pt-6 sm:px-6 sm:pt-8">
       <div className="flex items-baseline justify-between gap-3">
-        <button type="button" onClick={onBack} className="label transition-colors hover:!text-ink">
+        <button type="button" onClick={onBack} className="label transition-colors hover:!text-star">
           ← Edit the question
         </button>
-        <p className="font-mono text-[0.7rem] text-ink-3" title={`Deterministic shuffle: ${SHUFFLE_ALGORITHM}`}>
+        <p className="font-mono text-[0.7rem] text-star-3" title={`Deterministic shuffle: ${SHUFFLE_ALGORITHM}`}>
           seed {seed.slice(0, 8)}…{seed.slice(-4)}
         </p>
       </div>
@@ -110,7 +110,7 @@ export function DeckStep({
         <h2 className="display mt-3 text-[2.1rem] sm:text-[2.7rem]">
           {shuffling ? "Shuffling the deck" : complete ? "Laying out the cards" : picks.length === 0 ? "Choose your cards" : "Choose the next card"}
         </h2>
-        <p className="mt-3 text-[1.05rem] italic leading-snug text-ink-2">“{question.trim()}”</p>
+        <p className="mt-3 text-[1.05rem] italic leading-snug text-star-2">“{question.trim()}”</p>
       </div>
 
       {/* Spread tray */}
@@ -120,15 +120,15 @@ export function DeckStep({
           const current = i === picks.length && !shuffling;
           return (
             <div key={position.id} className="flex w-[3.75rem] flex-col items-center gap-2 sm:w-[4.5rem]">
-              <div className="relative aspect-[3/5] w-full">
-                <div className={`absolute inset-0 rounded-[5%] border border-dashed transition-colors ${current ? "border-accent" : "border-rule-2"}`} />
+              <div className="relative w-full" style={{ aspectRatio: CARD_ASPECT }}>
+                <div className={`absolute inset-0 rounded-[5%] border border-dashed transition-colors ${current ? "border-gold" : "border-line-2"}`} />
                 {filled && (
                   <div className="absolute inset-0 animate-deal-in">
                     <CardBack className={`h-full w-full ${CARD_SHADOW}`} />
                   </div>
                 )}
               </div>
-              <span className={`label text-center !text-[0.56rem] !tracking-[0.02em] sm:!text-[0.62rem] sm:!tracking-[0.08em] ${filled || current ? "!text-ink" : ""}`}>
+              <span className={`label text-center !text-[0.56rem] !tracking-[0.02em] sm:!text-[0.62rem] sm:!tracking-[0.08em] ${filled || current ? "!text-star" : ""}`}>
                 {position.label}
               </span>
             </div>
@@ -190,7 +190,7 @@ export function DeckStep({
             <button type="button" onClick={onPickForMe} className="btn btn-secondary">
               Draw for me
             </button>
-            <p className="text-sm text-ink-3">Or pick the cards that call to you — each pick fills the next position.</p>
+            <p className="text-sm text-star-3">Or pick the cards that call to you — each pick fills the next position.</p>
           </>
         )}
         {complete && (

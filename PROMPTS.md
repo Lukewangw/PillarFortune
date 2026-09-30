@@ -70,3 +70,12 @@ The v2 rewrite was produced with Claude Code, starting from the request to bring
 ### Visual redesign (v2.1)
 - Feedback on v2: the dark "mystical" interface (starfield, gold gradients, glass panels, pill chips) looked generic and AI-made. The request was "learn from other people's taste."
 - The redesign replaces it with a printed-almanac system: paper, ink and one vermilion accent, Newsreader and IBM Plex Mono, hairline rules, and figures with captions. The deck was redrawn as a Marseille-style printed deck. References and rules are in [docs/DESIGN.md](docs/DESIGN.md). Chart palettes were checked with a palette validator, not chosen by eye.
+
+### Visual redesign, second pass (v2.2)
+- Feedback on v2.1: the light almanac theme was "ugly and too vibe-coded". The request was to go back to a dark page, but not purple, with the look of real tarot shops (the user shared photos of a navy reading cloth with a gold zodiac chart and gold-foil Rider–Waite–Smith cards), a star field that sparkles now and then, and a better deck.
+- The result keeps the v2.1 layouts and replaces the materials:
+  - Midnight navy with antique-gold line work and a slowly turning zodiac wheel.
+  - A canvas star field with occasional glints and rare meteors.
+  - Cinzel, Newsreader and IBM Plex Mono.
+  - The public-domain 1909 Rider–Waite–Smith illustrations in gold borders, with an original celestial card back.
+- Rules and references are in [docs/DESIGN.md](docs/DESIGN.md).

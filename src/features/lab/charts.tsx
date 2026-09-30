@@ -21,7 +21,7 @@ function Tooltip({ x, y, width, children }: { x: number; y: number; width: numbe
   const left = Math.min(Math.max(x + 14, 8), width - 190);
   return (
     <div
-      className="pointer-events-none absolute z-10 min-w-40 border border-rule-2 bg-paper-2 px-3 py-2 font-mono text-[0.7rem] leading-relaxed text-ink-2 shadow-[var(--shadow-card)]"
+      className="pointer-events-none absolute z-10 min-w-40 border border-line-2 bg-night-2 px-3 py-2 font-mono text-[0.7rem] leading-relaxed text-star-2 shadow-[var(--shadow-card)]"
       style={{ left, top: Math.max(0, y - 10) }}
     >
       {children}
@@ -195,9 +195,9 @@ export function BarList({
   return (
     <ul className="viz">
       {rows.map((row) => (
-        <li key={row.label} className="grid grid-cols-[7.5rem_1fr_3.25rem] items-center gap-3 border-b border-rule py-1.5 text-[0.9rem]" title={row.note}>
+        <li key={row.label} className="grid grid-cols-[7.5rem_1fr_3.25rem] items-center gap-3 border-b border-line py-1.5 text-[0.9rem]" title={row.note}>
           <span className="truncate text-[var(--viz-text-2)]">{row.label}</span>
-          <span className="relative h-2 bg-paper-3">
+          <span className="relative h-2 bg-night-3">
             <span className="absolute inset-y-0 left-0" style={{ width: `${(row.value / max) * 100}%`, background: row.label === highlight ? "var(--viz-highlight)" : color }} />
           </span>
           <span className="text-right font-mono text-[0.75rem] tabular-nums text-[var(--viz-text)]">{format(row.value)}</span>
@@ -207,8 +207,8 @@ export function BarList({
   );
 }
 
-/** Sequential ink ramp (validated: one hue, monotone lightness, light end ≥ 2:1 on paper). */
-const RAMP = ["#afa38b", "#938670", "#776b57", "#5b5143", "#3e372d", "#1b1916"];
+/** Sequential gold ramp for the night surface (validated: one hue, monotone lightness, faint end ≥ 2:1). */
+const RAMP = ["#5e5032", "#7d6a40", "#9d864f", "#bea260", "#dcbf78", "#f3dfaa"];
 
 /** Confusion matrix, row-normalized (recall per true class). */
 export function ConfusionMatrix({ labels, matrix, display }: { labels: string[]; matrix: number[][]; display?: (label: string) => string }) {
@@ -236,8 +236,8 @@ export function ConfusionMatrix({ labels, matrix, display }: { labels: string[];
                 {row.map((count, j) => {
                   const share = count / total;
                   const step = Math.min(RAMP.length - 1, Math.floor(share * RAMP.length));
-                  const bg = count === 0 ? "var(--color-paper-3)" : RAMP[step];
-                  const dark = count > 0 && step >= 3;
+                  const bg = count === 0 ? "var(--color-night-3)" : RAMP[step];
+                  const bright = count > 0 && step >= 3;
                   const active = hover?.[0] === i && hover?.[1] === j;
                   return (
                     <td
@@ -249,7 +249,7 @@ export function ConfusionMatrix({ labels, matrix, display }: { labels: string[];
                       onBlur={() => setHover(null)}
                       title={`${name(labels[i])} → ${name(labels[j])}: ${count} (${Math.round(share * 100)}% of row)`}
                       className={`h-9 min-w-12 text-center tabular-nums outline-none ${active ? "ring-2 ring-[var(--viz-highlight)]" : ""}`}
-                      style={{ background: bg, color: dark ? "var(--color-paper-2)" : "var(--viz-text)" }}
+                      style={{ background: bg, color: bright ? "#1a1408" : "var(--viz-text)" }}
                     >
                       {count}
                     </td>
@@ -325,10 +325,10 @@ export function Histogram({
 /** A key figure: a large serif number over a monospace label, like an annual report. */
 export function StatTile({ label, value, caption }: { label: string; value: string; caption?: string }) {
   return (
-    <div className="min-w-0 border-t border-ink pt-3">
+    <div className="min-w-0 border-t border-gold/50 pt-3">
       <p className="label">{label}</p>
-      <p className="mt-2 text-[2.1rem] leading-none tracking-[-0.01em] text-ink">{value}</p>
-      {caption && <p className="mt-2 text-[0.86rem] leading-snug text-ink-3">{caption}</p>}
+      <p className="mt-2 text-[2.1rem] leading-none tracking-[-0.01em] text-star">{value}</p>
+      {caption && <p className="mt-2 text-[0.86rem] leading-snug text-star-3">{caption}</p>}
     </div>
   );
 }
@@ -338,11 +338,11 @@ export function Figure({ n, title, note, children, className = "" }: { n?: strin
   return (
     <figure className={`figure ${className}`}>
       <figcaption>
-        <p className="text-[1.05rem] leading-snug text-ink">
-          {n && <span className="label mr-2 !text-accent">Fig. {n}</span>}
+        <p className="text-[1.05rem] leading-snug text-star">
+          {n && <span className="label mr-2 !text-gold">Fig. {n}</span>}
           {title}
         </p>
-        {note && <p className="mt-1 text-[0.88rem] leading-snug text-ink-3">{note}</p>}
+        {note && <p className="mt-1 text-[0.88rem] leading-snug text-star-3">{note}</p>}
       </figcaption>
       <div className="mt-4">{children}</div>
     </figure>

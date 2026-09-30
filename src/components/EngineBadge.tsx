@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ENGINE_INFO, type EngineMode } from "../lib/engine";
 import { useEngine } from "../lib/engineContext";
 
-const MARK: Record<EngineMode, string> = { live: "bg-ok", demo: "bg-warn", offline: "bg-ink-3" };
+const MARK: Record<EngineMode, string> = { live: "bg-ok", demo: "bg-warn", offline: "bg-star-3" };
 const SHORT: Record<EngineMode, string> = { live: "Live", demo: "Sim", offline: "Offline" };
 
 /** The interpretation engine switch: a quiet text control in the header that opens a small menu. */
@@ -39,15 +39,15 @@ export function EngineBadge() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="label flex items-center gap-2 py-1 transition-colors hover:!text-ink"
+        className="label flex items-center gap-2 py-1 transition-colors hover:!text-star"
         aria-haspopup="menu"
         aria-expanded={open}
         title="Interpretation engine"
       >
         <span className={`h-1.5 w-1.5 ${MARK[mode]}`} aria-hidden="true" />
         <span className="hidden sm:inline">Engine:</span>
-        <span className="hidden max-w-[9rem] truncate text-ink sm:inline">{label}</span>
-        <span className="text-ink sm:hidden">{SHORT[mode]}</span>
+        <span className="hidden max-w-[9rem] truncate text-star sm:inline">{label}</span>
+        <span className="text-star sm:hidden">{SHORT[mode]}</span>
         <span aria-hidden="true">{open ? "▴" : "▾"}</span>
       </button>
       {open && (
@@ -66,14 +66,14 @@ export function EngineBadge() {
                   setMode(option);
                   setOpen(false);
                 }}
-                className="flex w-full items-start gap-3 px-3 py-2.5 text-left transition-colors hover:bg-paper-3/60 disabled:cursor-not-allowed disabled:opacity-45"
+                className="flex w-full items-start gap-3 px-3 py-2.5 text-left transition-colors hover:bg-night-3/60 disabled:cursor-not-allowed disabled:opacity-45"
               >
-                <span className={`mt-1.5 flex h-3 w-3 shrink-0 items-center justify-center border ${selected ? "border-ink" : "border-rule-2"}`} aria-hidden="true">
-                  {selected && <span className="h-1.5 w-1.5 bg-accent" />}
+                <span className={`mt-1.5 flex h-3 w-3 shrink-0 items-center justify-center border ${selected ? "border-gold/50" : "border-line-2"}`} aria-hidden="true">
+                  {selected && <span className="h-1.5 w-1.5 bg-gold" />}
                 </span>
                 <span className="flex-1">
-                  <span className="block text-[0.95rem] leading-snug text-ink">{ENGINE_INFO[option].title}</span>
-                  <span className="mt-0.5 block text-[0.8rem] leading-snug text-ink-3">{option === "live" ? liveNote : ENGINE_INFO[option].detail}</span>
+                  <span className="block text-[0.95rem] leading-snug text-star">{ENGINE_INFO[option].title}</span>
+                  <span className="mt-0.5 block text-[0.8rem] leading-snug text-star-3">{option === "live" ? liveNote : ENGINE_INFO[option].detail}</span>
                 </span>
               </button>
             );

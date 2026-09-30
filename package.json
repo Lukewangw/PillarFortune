@@ -22,6 +22,7 @@
     "smoke": "tsx scripts/smoke-api.ts"
   },
   "dependencies": {
+    "@fontsource-variable/cinzel": "^5.3.0",
     "@fontsource-variable/newsreader": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "lucide-react": "^1.49.0",

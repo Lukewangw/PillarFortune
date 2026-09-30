@@ -8,14 +8,14 @@ export const OUTCOME_META: Record<Outcome, { label: string; mark: string }> = {
   accepted: { label: "Accepted first try", mark: "bg-ok" },
   repaired: { label: "Repaired after validation", mark: "bg-warn" },
   fallback: { label: "Knowledge-base fallback", mark: "bg-bad" },
-  offline: { label: "Offline composer", mark: "bg-ink-3" },
-  blocked: { label: "Routed to support", mark: "bg-accent" },
+  offline: { label: "Offline composer", mark: "bg-star-3" },
+  blocked: { label: "Routed to support", mark: "bg-gold" },
 };
 
 export function OutcomeBadge({ outcome }: { outcome: Outcome }) {
   const meta = OUTCOME_META[outcome];
   return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-[0.68rem] font-medium uppercase leading-none tracking-[0.06em] text-ink-2">
+    <span className="inline-flex items-center gap-1.5 font-mono text-[0.68rem] font-medium uppercase leading-none tracking-[0.06em] text-star-2">
       <span className={`h-1.5 w-1.5 ${meta.mark}`} aria-hidden="true" />
       {meta.label}
     </span>
@@ -49,14 +49,14 @@ function Timeline({ trace }: { trace: Trace }) {
                 : "bg-bad"
               : span.name.startsWith("fallback")
                 ? "bg-warn"
-                : "bg-ink";
+                : "bg-star";
         return (
           <div key={i} className="grid grid-cols-[7rem_1fr_3.75rem] items-center gap-3 font-mono text-[0.7rem]">
-            <span className="truncate text-ink-2">{label}</span>
-            <div className="relative h-1.5 bg-paper-3">
+            <span className="truncate text-star-2">{label}</span>
+            <div className="relative h-1.5 bg-night-3">
               <div className={`absolute h-full ${color}`} style={{ left: `${left}%`, width: `${Math.min(width, 100 - left)}%` }} />
             </div>
-            <span className="text-right tabular-nums text-ink-3">{fmtMs(span.durationMs)}</span>
+            <span className="text-right tabular-nums text-star-3">{fmtMs(span.durationMs)}</span>
           </div>
         );
       })}
@@ -70,7 +70,7 @@ export function IssueList({ issues }: { issues: ValidationIssue[] }) {
       {issues.map((issue, i) => (
         <li key={i} className="text-[0.88rem] leading-snug">
           <span className="mr-2 font-mono text-[0.65rem] font-medium uppercase tracking-[0.06em] text-bad">{issue.stage}</span>
-          <span className="font-mono text-[0.78rem] text-ink">{issue.path}</span> <span className="text-ink-2">— {issue.message}</span>
+          <span className="font-mono text-[0.78rem] text-star">{issue.path}</span> <span className="text-star-2">— {issue.message}</span>
         </li>
       ))}
     </ul>
@@ -92,12 +92,12 @@ function AttemptCard({ span }: { span: TraceSpan }) {
   };
   const accepted = a.verdict === "accepted";
   return (
-    <div className="border-t border-rule py-4">
+    <div className="border-t border-line py-4">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="text-[1.05rem] text-ink">
+        <span className="text-[1.05rem] text-star">
           Attempt {a.n} — <span className={accepted ? "text-ok" : "text-bad"}>{a.verdict.replace("_", " ")}</span>
         </span>
-        <span className="font-mono text-[0.68rem] text-ink-3">
+        <span className="font-mono text-[0.68rem] text-star-3">
           {fmtMs(a.latencyMs)} · T={a.temperature} · {a.constrained ? "schema-constrained" : "unconstrained"}
           {a.usage?.completionTokens !== undefined && ` · ${a.usage.promptTokens ?? "?"} → ${a.usage.completionTokens} tokens`}
         </span>
@@ -109,14 +109,14 @@ function AttemptCard({ span }: { span: TraceSpan }) {
       )}
       {a.issues.length > 0 && <IssueList issues={a.issues} />}
       {a.notes.length > 0 && (
-        <p className="mt-2 text-[0.82rem] text-ink-3">
+        <p className="mt-2 text-[0.82rem] text-star-3">
           Normalized: <span className="font-mono text-[0.72rem]">{a.notes.join(", ")}</span>
         </p>
       )}
       {a.raw && (
         <details className="mt-2">
-          <summary className="label cursor-pointer transition-colors hover:!text-ink">Raw model output</summary>
-          <pre className="scrollbar-thin mt-2 max-h-72 overflow-auto bg-paper-3/70 p-3 font-mono text-[0.7rem] leading-relaxed text-ink-2">{pretty(a.raw)}</pre>
+          <summary className="label cursor-pointer transition-colors hover:!text-star">Raw model output</summary>
+          <pre className="scrollbar-thin mt-2 max-h-72 overflow-auto bg-night-3/70 p-3 font-mono text-[0.7rem] leading-relaxed text-star-2">{pretty(a.raw)}</pre>
         </details>
       )}
     </div>
@@ -162,20 +162,20 @@ export function TraceDrawer({
 
   return (
     <div className="fixed inset-0 z-[60] flex justify-end" role="dialog" aria-modal="true" aria-label="Pipeline trace">
-      <button type="button" className="absolute inset-0 bg-ink/25" onClick={onClose} aria-label="Close trace" />
-      <aside className="scrollbar-thin relative h-full w-full max-w-[40rem] animate-rise overflow-y-auto border-l border-rule bg-paper-2 px-5 py-6 shadow-[var(--shadow-sheet)] sm:px-8 sm:py-8">
+      <button type="button" className="absolute inset-0 bg-black/60" onClick={onClose} aria-label="Close trace" />
+      <aside className="scrollbar-thin relative h-full w-full max-w-[40rem] animate-rise overflow-y-auto border-l border-line bg-night-2 px-5 py-6 shadow-[var(--shadow-sheet)] sm:px-8 sm:py-8">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="label">Under the hood</p>
             <h2 className="display mt-2 text-[2.1rem]">Pipeline trace</h2>
-            <p className="mt-1 font-mono text-[0.68rem] text-ink-3">{trace.id}</p>
+            <p className="mt-1 font-mono text-[0.68rem] text-star-3">{trace.id}</p>
           </div>
-          <button type="button" onClick={onClose} className="-mr-2 p-2 text-ink-3 transition-colors hover:text-ink" aria-label="Close">
+          <button type="button" onClick={onClose} className="-mr-2 p-2 text-star-3 transition-colors hover:text-star" aria-label="Close">
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <dl className="mt-6 grid grid-cols-2 border-t border-ink sm:grid-cols-3">
+        <dl className="mt-6 grid grid-cols-2 border-t border-gold/50 sm:grid-cols-3">
           {[
             ["Outcome", outcome ? <OutcomeBadge key="o" outcome={outcome} /> : "—"],
             ["Engine", engine ? `${engine.provider} · ${engine.model.split("/").pop()}` : "—"],
@@ -184,29 +184,29 @@ export function TraceDrawer({
             ["Model calls", String(attempts.length)],
             ["Tokens", tokens.prompt + tokens.completion ? `${tokens.prompt} in · ${tokens.completion} out` : "—"],
           ].map(([label, value]) => (
-            <div key={label as string} className="border-b border-rule py-3 pr-3">
+            <div key={label as string} className="border-b border-line py-3 pr-3">
               <dt className="label">{label}</dt>
-              <dd className="mt-1.5 break-words text-[0.95rem] leading-snug text-ink">{value}</dd>
+              <dd className="mt-1.5 break-words text-[0.95rem] leading-snug text-star">{value}</dd>
             </div>
           ))}
         </dl>
 
-        <h3 className="label mt-8 !text-ink">Timeline</h3>
+        <h3 className="label mt-8 !text-star">Timeline</h3>
         <div className="mt-3">
           <Timeline trace={trace} />
         </div>
 
         {route && (
           <>
-            <h3 className="label mt-8 !text-ink">Routing</h3>
-            <p className="mt-2 text-[0.98rem] text-ink-2">
+            <h3 className="label mt-8 !text-star">Routing</h3>
+            <p className="mt-2 text-[0.98rem] text-star-2">
               {route.focus !== undefined && (
                 <>
-                  Focus <strong className="font-medium text-ink">{String(route.focus)}</strong> ({String(route.focusSource)}
+                  Focus <strong className="font-medium text-star">{String(route.focus)}</strong> ({String(route.focusSource)}
                   {typeof route.focusConfidence === "number" ? `, ${Math.round(route.focusConfidence * 100)}%` : ""}) ·{" "}
                 </>
               )}
-              safety <strong className="font-medium text-ink">{String(route.safety)}</strong>
+              safety <strong className="font-medium text-star">{String(route.safety)}</strong>
               {route.rule ? ` (rule: ${String(route.rule)})` : ""}
               {route.gate ? ` · ${String(route.gate)} gate` : ""}
             </p>
@@ -215,7 +215,7 @@ export function TraceDrawer({
 
         {draw?.cards && (
           <>
-            <h3 className="label mt-8 flex items-center gap-2 !text-ink">
+            <h3 className="label mt-8 flex items-center gap-2 !text-star">
               Deterministic draw
               {verified && (
                 <span className="seal !h-[1.1rem] !w-[1.1rem] !text-[0.65rem]" aria-hidden="true">
@@ -223,11 +223,11 @@ export function TraceDrawer({
                 </span>
               )}
             </h3>
-            <p className="mt-2 text-[0.95rem] text-ink-2">
-              <span className="font-mono text-[0.75rem] text-ink">{draw.algorithm}</span> · seed <span className="break-all font-mono text-[0.75rem]">{draw.seed}</span> ·
+            <p className="mt-2 text-[0.95rem] text-star-2">
+              <span className="font-mono text-[0.75rem] text-star">{draw.algorithm}</span> · seed <span className="break-all font-mono text-[0.75rem]">{draw.seed}</span> ·
               picks [{draw.picks?.join(", ")}]
             </p>
-            <ul className="mt-2 grid gap-x-4 gap-y-0.5 font-mono text-[0.72rem] text-ink-2 sm:grid-cols-2">
+            <ul className="mt-2 grid gap-x-4 gap-y-0.5 font-mono text-[0.72rem] text-star-2 sm:grid-cols-2">
               {draw.cards.map((c) => (
                 <li key={c}>{c}</li>
               ))}
@@ -244,7 +244,7 @@ export function TraceDrawer({
 
         {attempts.length > 0 && (
           <>
-            <h3 className="label mt-8 !text-ink">Model attempts</h3>
+            <h3 className="label mt-8 !text-star">Model attempts</h3>
             <div className="mt-2">
               {attempts.map((span, i) => (
                 <AttemptCard key={i} span={span} />
@@ -253,12 +253,12 @@ export function TraceDrawer({
           </>
         )}
         {fallback && (
-          <p className="mt-4 border-l-2 border-warn pl-3 text-[0.95rem] text-ink-2">
+          <p className="mt-4 border-l-2 border-warn pl-3 text-[0.95rem] text-star-2">
             Fallback served ({String(fallback.attrs.reason)}): a deterministic reading composed from the card knowledge base, which passes the same validator.
           </p>
         )}
 
-        <div className="mt-8 flex flex-wrap gap-2 border-t border-rule pt-6">
+        <div className="mt-8 flex flex-wrap gap-2 border-t border-line pt-6">
           <button
             type="button"
             className="btn btn-secondary"

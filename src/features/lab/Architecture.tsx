@@ -48,43 +48,43 @@ const STAGES = [
 export function Architecture() {
   return (
     <div>
-      <ol className="grid border-t border-ink sm:grid-cols-2 lg:grid-cols-3">
+      <ol className="grid border-t border-gold/50 sm:grid-cols-2 lg:grid-cols-3">
         {STAGES.map((stage, i) => (
           <li
             key={stage.n}
-            className={`border-b border-rule py-5 sm:pr-5 ${i % 2 === 1 ? "sm:border-l sm:pl-5" : "sm:border-l-0 sm:pl-0"} ${
+            className={`border-b border-line py-5 sm:pr-5 ${i % 2 === 1 ? "sm:border-l sm:pl-5" : "sm:border-l-0 sm:pl-0"} ${
               i % 3 === 0 ? "lg:border-l-0 lg:pl-0" : "lg:border-l lg:pl-5"
             }`}
           >
             <div className="flex items-baseline justify-between gap-3">
-              <span className="font-mono text-[0.8rem] text-accent">{String(stage.n).padStart(2, "0")}</span>
+              <span className="font-mono text-[0.8rem] text-gold">{String(stage.n).padStart(2, "0")}</span>
               <span className="label">{stage.tag}</span>
             </div>
-            <h3 className="mt-2 text-[1.3rem] leading-tight text-ink">{stage.title}</h3>
-            <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-2">{stage.body}</p>
-            <a href={codeLink(stage.code)} target="_blank" rel="noreferrer" className="mt-3 inline-block font-mono text-[0.7rem] text-ink-3 underline decoration-rule-2 underline-offset-4 hover:text-accent">
+            <h3 className="mt-2 text-[1.3rem] leading-tight text-star">{stage.title}</h3>
+            <p className="mt-2 text-[0.95rem] leading-relaxed text-star-2">{stage.body}</p>
+            <a href={codeLink(stage.code)} target="_blank" rel="noreferrer" className="mt-3 inline-block font-mono text-[0.7rem] text-star-3 underline decoration-line-2 underline-offset-4 hover:text-gold">
               {stage.code}
             </a>
           </li>
         ))}
       </ol>
       <div className="mt-10 grid gap-10 md:grid-cols-2">
-        <div className="border-t border-rule pt-4">
-          <p className="label !text-ink">Sessions · Durable Objects</p>
-          <p className="mt-2 text-[0.98rem] leading-relaxed text-ink-2">
+        <div className="border-t border-line pt-4">
+          <p className="label !text-star">Sessions · Durable Objects</p>
+          <p className="mt-2 text-[0.98rem] leading-relaxed text-star-2">
             One object per reading holds the question, the drawn cards, the summary, the recent turns and an LLM-compressed memory of older ones, and processes follow-ups
             strictly one at a time, so concurrent messages can never interleave. Sessions expire after a week.{" "}
-            <a className="font-mono text-[0.7rem] text-ink-3 underline decoration-rule-2 underline-offset-4 hover:text-accent" href={codeLink("worker/src/session.ts")} target="_blank" rel="noreferrer">
+            <a className="font-mono text-[0.7rem] text-star-3 underline decoration-line-2 underline-offset-4 hover:text-gold" href={codeLink("worker/src/session.ts")} target="_blank" rel="noreferrer">
               worker/src/session.ts
             </a>
           </p>
         </div>
-        <div className="border-t border-rule pt-4">
-          <p className="label !text-ink">Monitoring &amp; cost guards · D1</p>
-          <p className="mt-2 text-[0.98rem] leading-relaxed text-ink-2">
+        <div className="border-t border-line pt-4">
+          <p className="label !text-star">Monitoring &amp; cost guards · D1</p>
+          <p className="mt-2 text-[0.98rem] leading-relaxed text-star-2">
             Every request writes a trace row (outcome, attempts, issue codes, latency, tokens) that feeds the live metrics below; a daily model-call budget and per-network
             limits degrade gracefully to the knowledge-base composer instead of failing.{" "}
-            <a className="font-mono text-[0.7rem] text-ink-3 underline decoration-rule-2 underline-offset-4 hover:text-accent" href={codeLink("worker/src/metrics.ts")} target="_blank" rel="noreferrer">
+            <a className="font-mono text-[0.7rem] text-star-3 underline decoration-line-2 underline-offset-4 hover:text-gold" href={codeLink("worker/src/metrics.ts")} target="_blank" rel="noreferrer">
               worker/src/metrics.ts
             </a>
           </p>

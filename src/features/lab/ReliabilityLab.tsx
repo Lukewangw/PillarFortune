@@ -78,9 +78,9 @@ function OutcomeBar({ result }: { result: SimResult }) {
       </div>
       <ul className="mt-3 grid gap-1.5 text-[0.92rem] sm:grid-cols-3">
         {parts.map(({ key, label, value, color, Icon }) => (
-          <li key={key} className="flex items-center gap-2 text-ink-2">
+          <li key={key} className="flex items-center gap-2 text-star-2">
             <Icon className="h-3.5 w-3.5" style={{ color }} />
-            <strong className="font-mono text-[0.8rem] font-medium tabular-nums text-ink">{pct(value / result.n)}</strong> {label}
+            <strong className="font-mono text-[0.8rem] font-medium tabular-nums text-star">{pct(value / result.n)}</strong> {label}
           </li>
         ))}
       </ul>
@@ -139,25 +139,25 @@ export function ReliabilityLab() {
         </Figure>
       </div>
 
-      <div className="border-t border-ink pt-4">
+      <div className="border-t border-gold/50 pt-4">
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
           <p className="text-[1.25rem] leading-snug">Run it yourself — in your browser, on the real pipeline code</p>
-          <p className="text-[0.92rem] text-ink-3">
+          <p className="text-[0.92rem] text-star-3">
             Committed sweep: {totalRequests.toLocaleString()} simulated requests, <span className="text-ok">{invalid} invalid outputs shipped</span>.
           </p>
         </div>
         <div className="mt-6 grid gap-6 sm:grid-cols-3">
           <label className="block">
-            <span className="label">Per-attempt failure rate</span> <span className="ml-1 font-mono text-[0.8rem] text-ink">{pct(p)}</span>
-            <input type="range" min={0} max={0.8} step={0.05} value={p} onChange={(e) => setP(Number(e.target.value))} className="mt-2 w-full accent-[var(--color-accent)]" />
+            <span className="label">Per-attempt failure rate</span> <span className="ml-1 font-mono text-[0.8rem] text-star">{pct(p)}</span>
+            <input type="range" min={0} max={0.8} step={0.05} value={p} onChange={(e) => setP(Number(e.target.value))} className="mt-2 w-full accent-[var(--color-gold)]" />
           </label>
           <label className="block">
-            <span className="label">Max model calls</span> <span className="ml-1 font-mono text-[0.8rem] text-ink">{k}</span>
-            <input type="range" min={1} max={5} step={1} value={k} onChange={(e) => setK(Number(e.target.value))} className="mt-2 w-full accent-[var(--color-accent)]" />
+            <span className="label">Max model calls</span> <span className="ml-1 font-mono text-[0.8rem] text-star">{k}</span>
+            <input type="range" min={1} max={5} step={1} value={k} onChange={(e) => setK(Number(e.target.value))} className="mt-2 w-full accent-[var(--color-gold)]" />
           </label>
           <label className="block">
             <span className="label">Repair feedback effect</span>{" "}
-            <span className="ml-1 font-mono text-[0.8rem] text-ink">{repairFactor === 1 ? "none" : `−${Math.round((1 - repairFactor) * 100)}% failures`}</span>
+            <span className="ml-1 font-mono text-[0.8rem] text-star">{repairFactor === 1 ? "none" : `−${Math.round((1 - repairFactor) * 100)}% failures`}</span>
             <input
               type="range"
               min={0.2}
@@ -165,7 +165,7 @@ export function ReliabilityLab() {
               step={0.1}
               value={repairFactor}
               onChange={(e) => setRepairFactor(Number(e.target.value))}
-              className="mt-2 w-full accent-[var(--color-accent)]"
+              className="mt-2 w-full accent-[var(--color-gold)]"
             />
           </label>
         </div>
@@ -174,7 +174,7 @@ export function ReliabilityLab() {
             {running !== null ? `Running… ${running}/${N}` : `Simulate ${N} requests`}
           </button>
           {result && (
-            <p className="font-mono text-[0.75rem] text-ink-3">
+            <p className="font-mono text-[0.75rem] text-star-3">
               p = {pct(result.p)}, k = {result.k}: mean {(result.attempts / result.n).toFixed(2)} calls per request
               {result.repairFactor === 1 && ` · predicted fallback ${(result.p ** result.k * 100).toFixed(1)}%`}
             </p>

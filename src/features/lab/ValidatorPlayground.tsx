@@ -86,12 +86,12 @@ export function ValidatorPlayground() {
               {fault.label}
             </button>
           ))}
-          <button type="button" onClick={() => setText(VALID)} className="tag cursor-pointer !px-2.5 !py-1.5 transition-colors hover:border-ink hover:text-ink">
+          <button type="button" onClick={() => setText(VALID)} className="tag cursor-pointer !px-2.5 !py-1.5 transition-colors hover:border-gold/50 hover:text-star">
             ↺ Reset
           </button>
         </div>
       </div>
-      <div className="min-w-0 border-t border-ink pt-4 lg:mt-[1.35rem]" aria-live="polite">
+      <div className="min-w-0 border-t border-gold/50 pt-4 lg:mt-[1.35rem]" aria-live="polite">
         <p className="label">Validator verdict</p>
         {result.issues.length === 0 ? (
           <p className="mt-3 text-[1.25rem] leading-snug text-ok">✓ Passes every check — this output would be shipped.</p>
@@ -104,13 +104,13 @@ export function ValidatorPlayground() {
           </>
         )}
         {result.notes.length > 0 && (
-          <p className="mt-4 text-[0.88rem] text-ink-3">
+          <p className="mt-4 text-[0.88rem] text-star-3">
             Normalized before validation: <span className="font-mono text-[0.72rem]">{result.notes.join(", ")}</span>
           </p>
         )}
-        <p className="mt-6 border-t border-rule pt-4 text-[0.92rem] leading-relaxed text-ink-3">
-          The schema is generated per draw: <span className="font-mono text-[0.72rem] text-ink-2">cardId</span> must be one of{" "}
-          <span className="font-mono text-[0.72rem] text-ink-2">{DRAW.cards.map((c) => c.cardId).join(", ")}</span>, positions and orientations must match the draw exactly,
+        <p className="mt-6 border-t border-line pt-4 text-[0.92rem] leading-relaxed text-star-3">
+          The schema is generated per draw: <span className="font-mono text-[0.72rem] text-star-2">cardId</span> must be one of{" "}
+          <span className="font-mono text-[0.72rem] text-star-2">{DRAW.cards.map((c) => c.cardId).join(", ")}</span>, positions and orientations must match the draw exactly,
           and free text may not name any other card. Harmless deviations (a card name instead of its id, “Upright”, extra keys, wrong order) are normalized instead of
           rejected.
         </p>

@@ -46,22 +46,22 @@ export function RouterLab() {
           {route ? (
             <div className="mt-5 grid gap-6 sm:grid-cols-2">
               <div>
-                <p className="mb-2 text-[0.95rem] text-ink-2">
-                  Focus → <span className="text-ink">{FOCUS_NAME[route.focus.label]}</span>
+                <p className="mb-2 text-[0.95rem] text-star-2">
+                  Focus → <span className="text-star">{FOCUS_NAME[route.focus.label]}</span>
                 </p>
                 <ProbBars probs={route.focus.probs} names={FOCUS_NAME} />
               </div>
               <div>
-                <p className="mb-2 text-[0.95rem] text-ink-2">
-                  Safety → <span className="text-ink">{SAFETY_NAME[route.safety.label]}</span>
-                  {route.safety.gate && <span className="ml-1 text-accent">({route.safety.gate} gate)</span>}
+                <p className="mb-2 text-[0.95rem] text-star-2">
+                  Safety → <span className="text-star">{SAFETY_NAME[route.safety.label]}</span>
+                  {route.safety.gate && <span className="ml-1 text-gold">({route.safety.gate} gate)</span>}
                 </p>
                 <ProbBars probs={route.safety.probs} names={SAFETY_NAME} />
-                {route.safety.rule && <p className="mt-2 font-mono text-[0.7rem] text-accent">rule: {route.safety.rule}</p>}
+                {route.safety.rule && <p className="mt-2 font-mono text-[0.7rem] text-gold">rule: {route.safety.rule}</p>}
               </div>
             </div>
           ) : (
-            <p className="mt-4 text-[0.92rem] italic text-ink-3">Type at least 8 characters…</p>
+            <p className="mt-4 text-[0.92rem] italic text-star-3">Type at least 8 characters…</p>
           )}
         </Figure>
 
@@ -84,7 +84,7 @@ export function RouterLab() {
             highlight="Served (both)"
             format={pct}
           />
-          <p className="mt-4 text-[0.9rem] leading-snug text-ink-3">
+          <p className="mt-4 text-[0.9rem] leading-snug text-star-3">
             Recall on the {headlineName}. False alarms: {headline.crisis.falseAlarms.hardRulesOnly} from hard rules, {headline.crisis.falseAlarms.served} overall, out of{" "}
             {headline.crisis.nonCrisis} non-crisis questions.
           </p>
@@ -100,9 +100,9 @@ export function RouterLab() {
         </Figure>
       </div>
 
-      <details className="border-t border-rule pt-3">
-        <summary className="label cursor-pointer transition-colors hover:!text-ink">Method, splits and ablations</summary>
-        <ul className="mt-4 max-w-[46rem] list-disc space-y-2 pl-5 text-[0.98rem] leading-relaxed text-ink-2">
+      <details className="border-t border-line pt-3">
+        <summary className="label cursor-pointer transition-colors hover:!text-star">Method, splits and ablations</summary>
+        <ul className="mt-4 max-w-[46rem] list-disc space-y-2 pl-5 text-[0.98rem] leading-relaxed text-star-2">
           <li>
             Data: {metrics.model.trainExamples.toLocaleString()} training questions (English and Chinese), a dev set of {splits.dev.n} used for error analysis, and{" "}
             {splits.test ? `a blind test set of ${splits.test.n} written by a separate author and scored once` : "a blind test set that is scored once, at the end"}.

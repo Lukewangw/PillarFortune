@@ -1,45 +1,55 @@
 @import "tailwindcss";
 
 /*
- * PillarFortune — "a printed almanac".
- * Warm paper, black ink and a single vermilion (朱) accent; a serif for reading and a
- * monospace for labels, numbers and machinery. Hairline rules instead of boxes, no
- * gradients or glows. The rules behind these tokens are in docs/DESIGN.md.
+ * PillarFortune — a tarot parlour after dark.
+ * Midnight navy velvet (not purple), antique gold line work in the manner of a celestial
+ * chart, parchment text, and the 1909 Rider–Waite–Smith deck. Cinzel is the inscription
+ * face (labels, buttons, titles on cards), Newsreader the reading face, IBM Plex Mono the
+ * face for machinery. The rules behind these tokens are in docs/DESIGN.md.
  */
 
 @theme {
+  --font-display: "Cinzel Variable", "Cinzel", "Noto Serif SC", "Songti SC", Georgia, serif;
   --font-serif: "Newsreader Variable", "Noto Serif SC", "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", Georgia, serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "PingFang SC", "Microsoft YaHei", monospace;
   --font-sans: var(--font-serif);
 
-  --color-paper: #f3efe6;
-  --color-paper-2: #faf7f1;
-  --color-paper-3: #e9e3d6;
-  --color-ink: #1b1916;
-  --color-ink-2: #4a453d;
-  --color-ink-3: #6d675a;
-  --color-rule: #d8d0c1;
-  --color-rule-2: #bfb5a2;
-  --color-accent: #b93a26;
-  --color-accent-2: #962c1b;
-  --color-ok: #2e6b4a;
-  --color-warn: #8a5a00;
-  --color-bad: #b93a26;
+  /* Night sky and velvet */
+  --color-night: #0a0f1f;
+  --color-night-2: #111a30;
+  --color-night-3: #18233f;
+  /* Parchment text (≥ 4.5:1 on every night surface) */
+  --color-star: #f0e8d6;
+  --color-star-2: #c9c1ad;
+  --color-star-3: #8f97ab;
+  /* Gold-tinted hairlines */
+  --color-line: rgb(214 179 112 / 0.16);
+  --color-line-2: rgb(214 179 112 / 0.34);
+  /* Antique gold */
+  --color-gold: #d6b370;
+  --color-gold-2: #f0dcaa;
+  --color-gold-3: #a8843f;
+  /* Status text */
+  --color-ok: #8fd1ab;
+  --color-warn: #e9bd6a;
+  --color-bad: #ee8d78;
 
-  /* Five-element pigments for the Four Pillars page (text weights; chart marks live in .viz). */
-  --color-wood: #2c6b45;
-  --color-fire: #b3382a;
-  --color-earth: #8f6a1c;
-  --color-metal: #5f636a;
-  --color-water: #2a5690;
+  /* Five-element pigments for the Four Pillars page, lifted for a dark ground. */
+  --color-wood: #86c79f;
+  --color-fire: #f08c6e;
+  --color-earth: #e0bb6c;
+  --color-metal: #d3d7de;
+  --color-water: #86b7ec;
 
-  --shadow-card: 0 1px 1px rgb(27 25 22 / 0.1), 0 10px 18px -12px rgb(27 25 22 / 0.45);
-  --shadow-lift: 0 1px 1px rgb(27 25 22 / 0.1), 0 18px 28px -14px rgb(27 25 22 / 0.5);
-  --shadow-sheet: -30px 0 60px -30px rgb(27 25 22 / 0.35);
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 14px 26px -12px rgb(0 0 0 / 0.85), 0 2px 6px rgb(0 0 0 / 0.5);
+  --shadow-lift: 0 0 0 1px rgb(214 179 112 / 0.35), 0 18px 36px -14px rgb(0 0 0 / 0.9), 0 0 28px -6px rgb(214 179 112 / 0.28);
+  --shadow-sheet: -40px 0 80px -30px rgb(0 0 0 / 0.8);
 
   --animate-riffle: riffle 1.35s ease-in-out both;
   --animate-deal-in: deal-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) both;
   --animate-rise: rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-orbit: orbit 720s linear infinite;
+  --animate-shimmer: shimmer 3.2s ease-in-out infinite;
 
   @keyframes riffle {
     0%, 50%, 100% { transform: translate(0, var(--y0)) rotate(0deg); }
@@ -54,12 +64,19 @@
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: none; }
   }
+  @keyframes orbit {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
 }
 
 @layer base {
   html {
-    color-scheme: light;
-    background: var(--color-paper);
+    color-scheme: dark;
+    background: var(--color-night);
     -webkit-tap-highlight-color: transparent;
     text-size-adjust: 100%;
   }
@@ -68,8 +85,8 @@
     font-family: var(--font-serif);
     font-size: 1.0625rem;
     line-height: 1.6;
-    color: var(--color-ink);
-    background: var(--color-paper);
+    color: var(--color-star);
+    background: radial-gradient(120% 80% at 50% 0%, #15203d 0%, #0c1224 45%, #070a15 100%) fixed, var(--color-night);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     font-kerning: normal;
@@ -77,11 +94,11 @@
     font-synthesis-style: none;
   }
   ::selection {
-    background: rgb(185 58 38 / 0.18);
-    color: var(--color-ink);
+    background: rgb(214 179 112 / 0.3);
+    color: #fff8e8;
   }
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-gold);
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -93,33 +110,46 @@
     text-decoration-thickness: 1px;
   }
   hr {
-    border-color: var(--color-rule);
+    border-color: var(--color-line);
   }
 }
 
 @layer components {
-  /* Small uppercase monospace label: metadata, field names, section markers. */
+  /* Inscription label: small, spaced Cinzel capitals in gold. */
   .label {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
+    font-family: var(--font-display);
+    font-size: 0.68rem;
     line-height: 1.4;
-    font-weight: 500;
-    letter-spacing: 0.08em;
+    font-weight: 600;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--color-ink-3);
+    color: var(--color-gold);
+  }
+  /* Small technical readout. */
+  .meta {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    line-height: 1.5;
+    color: var(--color-star-3);
   }
   .display {
     font-family: var(--font-serif);
     font-weight: 400;
-    letter-spacing: -0.018em;
-    line-height: 1.08;
-    color: var(--color-ink);
+    letter-spacing: -0.012em;
+    line-height: 1.1;
+    color: var(--color-star);
     text-wrap: balance;
+  }
+  .inscription {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--color-star);
   }
   .lede {
     font-size: 1.1875rem;
     line-height: 1.55;
-    color: var(--color-ink-2);
+    color: var(--color-star-2);
     text-wrap: pretty;
   }
   .numeric {
@@ -127,14 +157,22 @@
     font-variant-numeric: tabular-nums;
   }
   .link {
-    color: var(--color-ink);
+    color: var(--color-gold-2);
     text-decoration: underline;
-    text-decoration-color: var(--color-rule-2);
+    text-decoration-color: rgb(214 179 112 / 0.45);
     transition: text-decoration-color 0.15s ease, color 0.15s ease;
   }
   .link:hover {
-    text-decoration-color: var(--color-accent);
-    color: var(--color-accent-2);
+    text-decoration-color: var(--color-gold-2);
+    color: #fff4d6;
+  }
+  /* Gold foil text. */
+  .foil {
+    background: linear-gradient(100deg, #b8914a 0%, #f3e2b3 30%, #d6b370 50%, #fbeec6 70%, #b8914a 100%);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   .btn {
@@ -142,18 +180,18 @@
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
-    min-height: 2.75rem;
-    padding: 0.7rem 1.15rem;
+    min-height: 2.9rem;
+    padding: 0.75rem 1.5rem;
     border: 1px solid transparent;
     border-radius: 2px;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
+    font-family: var(--font-display);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     line-height: 1;
     white-space: nowrap;
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.25s ease, filter 0.2s ease;
   }
   .btn svg {
     width: 0.95rem;
@@ -166,51 +204,60 @@
   .btn:disabled {
     opacity: 0.4;
   }
+  /* Gold foil: a metallic gradient with a bright top edge. */
   .btn-primary {
-    background: var(--color-ink);
-    color: var(--color-paper-2);
+    color: #1c1509;
+    background: linear-gradient(180deg, #f3e2b3 0%, #dcbc79 42%, #b99248 100%);
+    border-color: #f6e6bb #c9a45c #9c7a37;
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.35) inset, 0 10px 26px -12px rgb(214 179 112 / 0.7);
   }
   .btn-primary:hover:not(:disabled) {
-    background: var(--color-accent);
+    filter: brightness(1.07);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.4) inset, 0 12px 32px -10px rgb(214 179 112 / 0.85), 0 0 22px -4px rgb(240 220 170 / 0.45);
   }
   .btn-secondary {
-    border-color: var(--color-ink);
-    color: var(--color-ink);
+    color: var(--color-gold-2);
+    border-color: rgb(214 179 112 / 0.55);
+    background: rgb(214 179 112 / 0.05);
   }
   .btn-secondary:hover:not(:disabled) {
-    background: var(--color-ink);
-    color: var(--color-paper-2);
+    background: rgb(214 179 112 / 0.13);
+    border-color: var(--color-gold);
+    color: #fff4d6;
   }
   .btn-quiet {
     min-height: 0;
     padding: 0.35rem 0;
-    color: var(--color-ink-2);
+    color: var(--color-star-2);
   }
   .btn-quiet:hover:not(:disabled) {
-    color: var(--color-accent);
+    color: var(--color-gold-2);
   }
 
   .field {
     width: 100%;
-    border: 1px solid var(--color-rule-2);
-    border-radius: 2px;
-    background: var(--color-paper-2);
+    border: 1px solid var(--color-line-2);
+    border-radius: 3px;
+    background: rgb(7 10 21 / 0.6);
     padding: 0.75rem 0.9rem;
-    color: var(--color-ink);
+    color: var(--color-star);
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
   .field::placeholder {
-    color: var(--color-ink-3);
+    color: var(--color-star-3);
     font-style: italic;
-    opacity: 0.85;
+    opacity: 0.9;
   }
   .field:focus {
     outline: none;
-    border-color: var(--color-ink);
-    box-shadow: 0 0 0 3px rgb(185 58 38 / 0.14);
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 3px rgb(214 179 112 / 0.16), 0 0 24px -8px rgb(214 179 112 / 0.5);
   }
   .field:disabled {
     opacity: 0.5;
+  }
+  select.field option {
+    background: var(--color-night-2);
   }
 
   .tag {
@@ -218,49 +265,79 @@
     align-items: center;
     gap: 0.35rem;
     padding: 0.2rem 0.45rem;
-    border: 1px solid var(--color-rule-2);
+    border: 1px solid var(--color-line-2);
     border-radius: 2px;
     font-family: var(--font-mono);
     font-size: 0.6875rem;
     line-height: 1.3;
-    letter-spacing: 0.04em;
-    color: var(--color-ink-2);
-    background: var(--color-paper-2);
+    letter-spacing: 0.02em;
+    color: var(--color-star-2);
+    background: rgb(17 26 48 / 0.6);
   }
 
-  /* A raised sheet of paper: drawers, playgrounds, the trace. */
+  /* Velvet panel with a double gold rule and a star at each corner, like a tarot box. */
+  .frame {
+    position: relative;
+    min-width: 0;
+    border: 1px solid var(--color-line-2);
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 L5.9 4.1 L10 5 L5.9 5.9 L5 10 L4.1 5.9 L0 5 L4.1 4.1 Z' fill='%23d6b370'/%3E%3C/svg%3E") 7px 7px / 9px no-repeat,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 L5.9 4.1 L10 5 L5.9 5.9 L5 10 L4.1 5.9 L0 5 L4.1 4.1 Z' fill='%23d6b370'/%3E%3C/svg%3E") calc(100% - 7px) 7px / 9px no-repeat,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 L5.9 4.1 L10 5 L5.9 5.9 L5 10 L4.1 5.9 L0 5 L4.1 4.1 Z' fill='%23d6b370'/%3E%3C/svg%3E") 7px calc(100% - 7px) / 9px no-repeat,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 L5.9 4.1 L10 5 L5.9 5.9 L5 10 L4.1 5.9 L0 5 L4.1 4.1 Z' fill='%23d6b370'/%3E%3C/svg%3E") calc(100% - 7px) calc(100% - 7px) / 9px no-repeat,
+      linear-gradient(180deg, rgb(21 31 58 / 0.78), rgb(13 19 38 / 0.82));
+    outline: 1px solid rgb(214 179 112 / 0.16);
+    outline-offset: -6px;
+    box-shadow: 0 20px 50px -30px rgb(0 0 0 / 0.9);
+  }
+  /* A raised sheet: drawers and dense technical panels. */
   .sheet {
     min-width: 0;
-    border: 1px solid var(--color-rule);
-    background: var(--color-paper-2);
+    border: 1px solid var(--color-line-2);
+    background: var(--color-night-2);
   }
-  /* Printed figure: a strong top rule, then content. */
+  /* A figure: a gold rule, then content. */
   .figure {
     min-width: 0;
-    border-top: 1px solid var(--color-ink);
+    border-top: 1px solid var(--color-line-2);
     padding-top: 0.9rem;
   }
+  /* Ornamental divider: rule ✦ rule. */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    color: var(--color-gold);
+  }
+  .divider::before,
+  .divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(214 179 112 / 0.5), transparent);
+  }
 
-  /* Red seal (印) used for "verified". */
+  /* Wax-seal medallion used for "verified". */
   .seal {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.35rem;
-    height: 1.35rem;
-    border-radius: 2px;
-    background: var(--color-accent);
-    color: var(--color-paper-2);
+    width: 1.45rem;
+    height: 1.45rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-gold);
+    background: radial-gradient(circle at 35% 30%, rgb(240 220 170 / 0.35), rgb(214 179 112 / 0.08) 70%);
+    color: var(--color-gold-2);
     font-family: var(--font-serif);
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     font-weight: 600;
     line-height: 1;
-    transform: rotate(-3deg);
+    box-shadow: 0 0 12px -2px rgb(214 179 112 / 0.5);
   }
 
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: var(--color-rule-2) transparent;
+    scrollbar-color: rgb(214 179 112 / 0.35) transparent;
   }
 }
 
@@ -274,29 +351,29 @@
   }
 }
 
-/* Chart tokens, validated with the dataviz palette checks against the paper surface. */
+/* Chart tokens for the night surface, checked with the dataviz palette validator against #111a30. */
 .viz {
-  --viz-surface: #f3efe6;
-  --viz-grid: #e0d9cb;
-  --viz-axis: #1b1916;
-  --viz-text: #1b1916;
-  --viz-text-2: #4a453d;
-  --viz-muted: #6d675a;
-  --viz-s1: #1b1916;
-  --viz-highlight: #b93a26;
-  /* Ordinal ink ramp (1→4 model calls): one hue, monotone lightness, light end ≥ 2:1 on paper. */
-  --viz-ord-1: #a99f8b;
-  --viz-ord-2: #7f7563;
-  --viz-ord-3: #524a3f;
-  --viz-ord-4: #1b1916;
-  /* Status marks; always shown with an icon and a label. */
-  --viz-good: #23804f;
-  --viz-warn: #c98a0c;
-  --viz-crit: #b93a26;
-  /* Five elements as marks. Metal is achromatic by tradition (白); every mark is labelled. */
-  --viz-wood: #2f7d4f;
-  --viz-fire: #c0392b;
-  --viz-earth: #b5831f;
-  --viz-metal: #7b7f86;
-  --viz-water: #2b5d9c;
+  --viz-surface: #111a30;
+  --viz-grid: #26304a;
+  --viz-axis: #6b7390;
+  --viz-text: #f0e8d6;
+  --viz-text-2: #c9c1ad;
+  --viz-muted: #8f97ab;
+  --viz-s1: #c9a660;
+  --viz-highlight: #f0dcaa;
+  /* Ordinal gold ramp (1→4 model calls): one hue, monotone lightness, dark end ≥ 2:1 on the surface. */
+  --viz-ord-1: #6d5a35;
+  --viz-ord-2: #9c804a;
+  --viz-ord-3: #c9a660;
+  --viz-ord-4: #f0dcaa;
+  /* Status marks: always paired with an icon, a label and a 2px gap (CVD separation is in the 6–8 band). */
+  --viz-good: #3c9a66;
+  --viz-warn: #b58c19;
+  --viz-crit: #e64f6a;
+  /* Five elements as marks, one labelled row each. Metal is achromatic by tradition (白). */
+  --viz-wood: #3f9a78;
+  --viz-fire: #e2574a;
+  --viz-earth: #c08e22;
+  --viz-metal: #8c919c;
+  --viz-water: #4a8de0;
 }

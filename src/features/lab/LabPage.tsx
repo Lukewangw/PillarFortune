@@ -13,14 +13,14 @@ import { ValidatorPlayground } from "./ValidatorPlayground";
 
 function Section({ id, n, kicker, title, lead, children }: { id: string; n: string; kicker: string; title: string; lead: ReactNode; children: ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-20 border-t border-ink pb-16 pt-6">
+    <section id={id} className="scroll-mt-20 border-t border-gold/50 pb-16 pt-6">
       <div className="grid gap-3 lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-10">
         <p className="label pt-2">
-          <span className="text-accent">§{n}</span> · {kicker}
+          <span className="text-gold">§{n}</span> · {kicker}
         </p>
         <div>
           <h2 className="display text-[2rem] sm:text-[2.5rem]">{title}</h2>
-          <div className="mt-4 max-w-[46rem] text-[1.08rem] leading-relaxed text-ink-2">{lead}</div>
+          <div className="mt-4 max-w-[46rem] text-[1.08rem] leading-relaxed text-star-2">{lead}</div>
         </div>
       </div>
       <div className="mt-10">{children}</div>
@@ -46,21 +46,25 @@ export default function LabPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-20 pt-10 sm:px-6 sm:pt-14">
-      <p className="label">How it works</p>
-      <h1 className="display mt-5 max-w-[52rem] text-[2.6rem] sm:text-[3.7rem]">An LLM you can check</h1>
-      <p className="lede mt-5 max-w-[46rem]">
-        Tarot is a playful domain with a serious engineering core: a language model has to interpret facts it did not choose, in a strict format, without inventing
-        anything — and fail safely when it does. Everything on this page is live code running in your browser, the same code the Cloudflare Worker runs.
-      </p>
+      <div className="mx-auto max-w-3xl animate-rise text-center">
+        <p className="label">✦ &nbsp;How it works&nbsp; ✦</p>
+        <h1 className="display mt-6 text-[2.6rem] sm:text-[3.8rem]">
+          An LLM you can <em className="foil animate-shimmer pr-1 italic">check</em>
+        </h1>
+        <p className="lede mx-auto mt-5 max-w-[42rem]">
+          Tarot is a playful domain with a serious engineering core: a language model has to interpret facts it did not choose, in a strict format, without inventing
+          anything — and fail safely when it does. Everything on this page is live code running in your browser, the same code the Cloudflare Worker runs.
+        </p>
+      </div>
 
-      <div className="mt-12 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-14 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
         <StatTile label="Invalid outputs shipped" value={`${simInvalid} / ${simRequests.toLocaleString()}`} caption="simulated requests at 10–70% model failure rates; bad outputs are repaired or replaced" />
         <StatTile label="Cards chosen by the LLM" value="0" caption="a seeded, verifiable shuffle deals the cards; the model only sees the result" />
         <StatTile label={`Crisis recall · ${splits.test ? "blind test" : "dev"}`} value={`${(router.crisis.recall.served * 100).toFixed(1)}%`} caption="question router: a trained classifier plus high-precision rules" />
         <StatTile label="Four Pillars vs. reference" value="100%" caption="agreement with lunar-python on 4,000 random birth times" />
       </div>
 
-      <nav aria-label="On this page" className="mb-14 mt-14 border-t border-rule pt-5">
+      <nav aria-label="On this page" className="mb-14 mt-14 border-t border-line pt-5">
         <p className="label">Contents</p>
         <ol className="mt-3 grid gap-x-8 gap-y-1.5 sm:grid-cols-2 lg:grid-cols-4">
           {TOC.map(([id, label], i) => (
@@ -71,10 +75,10 @@ export default function LabPage() {
                   e.preventDefault();
                   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="group flex items-baseline gap-3 text-[1.02rem] text-ink transition-colors hover:text-accent"
+                className="group flex items-baseline gap-3 text-[1.02rem] text-star transition-colors hover:text-gold"
               >
-                <span className="font-mono text-[0.72rem] text-accent">§{i + 1}</span>
-                <span className="underline decoration-rule-2 underline-offset-4 group-hover:decoration-accent">{label}</span>
+                <span className="font-mono text-[0.72rem] text-gold">§{i + 1}</span>
+                <span className="underline decoration-line-2 underline-offset-4 group-hover:decoration-gold">{label}</span>
               </a>
             </li>
           ))}
@@ -188,7 +192,7 @@ export default function LabPage() {
         <LiveMetrics />
       </Section>
 
-      <p className="border-t border-rule pt-6 text-[1rem] text-ink-2">
+      <p className="border-t border-line pt-6 text-[1rem] text-star-2">
         Source, tests and the ML scripts are on{" "}
         <a className="link" href={REPO_URL} target="_blank" rel="noreferrer">
           GitHub

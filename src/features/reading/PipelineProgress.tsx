@@ -40,28 +40,28 @@ export function PipelineProgress({ modelLabel, trace }: { modelLabel: string; tr
     : null;
 
   return (
-    <div className="mx-auto mt-10 max-w-md border-t border-ink pt-4" role="status" aria-live="polite">
-      <p className="label">Pipeline</p>
-      <ol className="mt-3 space-y-2.5">
+    <div className="frame mx-auto mt-10 max-w-md px-6 pb-6 pt-7" role="status" aria-live="polite">
+      <p className="label text-center">✦ &nbsp;Consulting the cards&nbsp; ✦</p>
+      <ol className="mt-4 space-y-2.5">
         {STEPS.map((step, i) => {
           const state = states[i];
           return (
             <li key={step.id} className="grid grid-cols-[1.25rem_1fr] gap-x-2">
               <span
-                className={`font-mono text-[0.85rem] leading-[1.35rem] ${state === "done" ? "text-ok" : state === "warn" ? "text-warn" : state === "active" ? "text-accent" : "text-ink-3"}`}
+                className={`font-mono text-[0.85rem] leading-[1.35rem] ${state === "done" ? "text-ok" : state === "warn" ? "text-warn" : state === "active" ? "text-gold" : "text-star-3"}`}
                 aria-hidden="true"
               >
-                {state === "active" ? <span className="inline-block h-2 w-2 animate-pulse bg-accent align-middle" /> : MARK[state]}
+                {state === "active" ? <span className="inline-block h-2 w-2 animate-pulse bg-gold align-middle" /> : MARK[state]}
               </span>
               <span>
-                <span className={`block text-[0.98rem] leading-snug ${state === "pending" ? "text-ink-3" : "text-ink"}`}>{step.label}</span>
-                <span className="block font-mono text-[0.7rem] leading-relaxed text-ink-3">{step.id === "generate" ? modelLabel : step.detail}</span>
+                <span className={`block text-[0.98rem] leading-snug ${state === "pending" ? "text-star-3" : "text-star"}`}>{step.label}</span>
+                <span className="block font-mono text-[0.7rem] leading-relaxed text-star-3">{step.id === "generate" ? modelLabel : step.detail}</span>
               </span>
             </li>
           );
         })}
       </ol>
-      {note && <p className="mt-4 border-t border-rule pt-3 text-[0.9rem] leading-snug text-ink-2">{note}</p>}
+      {note && <p className="mt-4 border-t border-line pt-3 text-[0.9rem] leading-snug text-star-2">{note}</p>}
     </div>
   );
 }

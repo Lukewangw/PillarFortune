@@ -55,10 +55,11 @@ export function ChatPanel({
   const unused = suggestions.filter((s) => !entries.some((e) => e.role === "user" && e.content === s));
 
   return (
-    <section aria-label="Follow-up conversation">
-      <div className="border-t border-ink pt-4">
-        <h2 className="text-[1.6rem] leading-tight">Ask a follow-up</h2>
-        <p className="mt-1 text-[0.95rem] text-ink-3">Answers stay grounded in the cards you drew, and the session remembers the conversation.</p>
+    <section aria-label="Follow-up conversation" className="frame px-5 pb-6 pt-8 sm:px-9 sm:pb-8 sm:pt-10">
+      <div className="text-center">
+        <p className="label">✦ &nbsp;Continue the reading&nbsp; ✦</p>
+        <h2 className="display mt-3 text-[1.9rem]">Ask a follow-up</h2>
+        <p className="mx-auto mt-2 max-w-md text-[0.95rem] text-star-3">Answers stay grounded in the cards you drew, and the session remembers the conversation.</p>
       </div>
 
       {entries.length > 0 && (
@@ -66,15 +67,15 @@ export function ChatPanel({
           {entries.map((entry, i) =>
             entry.role === "user" ? (
               <li key={i} data-entry="user" className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-3">
-                <span className="label pt-1">You</span>
-                <p className="text-[1.05rem] italic leading-relaxed text-ink">{entry.content}</p>
+                <span className="label pt-1 !text-star-3">You</span>
+                <p className="text-[1.05rem] italic leading-relaxed text-star">{entry.content}</p>
               </li>
             ) : (
               <li key={i} data-entry="assistant" className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-3">
-                <span className={`label pt-1 ${entry.error ? "!text-bad" : "!text-accent"}`}>{entry.error ? "Error" : "Reply"}</span>
+                <span className={`label pt-1 ${entry.error ? "!text-bad" : "!text-gold"}`}>{entry.error ? "Error" : "Reply"}</span>
                 <div className="min-w-0">
                   {entry.support && <SupportCard support={entry.support} compact />}
-                  <p className={`text-[1.02rem] leading-relaxed ${entry.error ? "text-bad" : "text-ink-2"} ${entry.support ? "mt-3" : ""}`}>{entry.content}</p>
+                  <p className={`text-[1.02rem] leading-relaxed ${entry.error ? "text-bad" : "text-star-2"} ${entry.support ? "mt-3" : ""}`}>{entry.content}</p>
                   {!entry.error && (entry.refs?.length || entry.trace || (entry.outcome && entry.outcome !== "accepted" && entry.outcome !== "offline")) && (
                     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
                       {entry.refs?.map((ref) => {
@@ -88,7 +89,7 @@ export function ChatPanel({
                       })}
                       {entry.outcome && entry.outcome !== "accepted" && entry.outcome !== "offline" && <OutcomeBadge outcome={entry.outcome} />}
                       {entry.trace && (
-                        <button type="button" onClick={() => onInspect(entry)} className="label transition-colors hover:!text-accent">
+                        <button type="button" onClick={() => onInspect(entry)} className="label transition-colors hover:!text-gold">
                           Trace →
                         </button>
                       )}
@@ -100,9 +101,9 @@ export function ChatPanel({
           )}
           {busy && (
             <li className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-3">
-              <span className="label pt-1 !text-accent">Reply</span>
-              <p className="flex items-center gap-2 text-[1rem] italic text-ink-3">
-                <span className="inline-block h-2 w-2 animate-pulse bg-accent" aria-hidden="true" /> Consulting the cards…
+              <span className="label pt-1 !text-gold">Reply</span>
+              <p className="flex items-center gap-2 text-[1rem] italic text-star-3">
+                <span className="inline-block h-2 w-2 animate-pulse bg-gold" aria-hidden="true" /> Consulting the cards…
               </p>
             </li>
           )}
@@ -116,7 +117,7 @@ export function ChatPanel({
           <ul className="mt-2 space-y-1">
             {unused.map((s) => (
               <li key={s}>
-                <button type="button" onClick={() => send(s)} disabled={busy} className="text-left text-[1rem] italic leading-snug text-ink-2 transition-colors hover:text-accent disabled:opacity-50">
+                <button type="button" onClick={() => send(s)} disabled={busy} className="text-left text-[1rem] italic leading-snug text-star-2 transition-colors hover:text-gold disabled:opacity-50">
                   “{s}”
                 </button>
               </li>
@@ -126,7 +127,7 @@ export function ChatPanel({
       )}
 
       {disabledReason ? (
-        <p className="mt-6 text-[0.95rem] text-ink-3">{disabledReason}</p>
+        <p className="mt-6 text-[0.95rem] text-star-3">{disabledReason}</p>
       ) : (
         <form
           className="mt-6 flex gap-2"
