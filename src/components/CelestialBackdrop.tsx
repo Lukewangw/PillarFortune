@@ -12,7 +12,7 @@ export function CelestialBackdrop() {
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       <StarCanvas />
-      <div className="absolute left-1/2 top-[-26vmin] w-[min(1300px,155vmin)] -translate-x-1/2 opacity-50">
+      <div className="absolute left-1/2 top-[-26vmin] w-[min(1300px,155vmin)] -translate-x-1/2 opacity-30">
         <ZodiacWheel className="w-full animate-orbit" />
       </div>
       <Constellations />

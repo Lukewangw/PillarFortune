@@ -239,8 +239,8 @@
   .btn-primary:disabled {
     opacity: 1;
     color: var(--color-star-2);
-    background: #0a0f1d;
-    border-color: rgb(214 179 112 / 0.45);
+    background: none;
+    border-color: transparent;
     box-shadow: none;
     cursor: not-allowed;
   }
