@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#06050d" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#f3efe6" />
+    <meta name="color-scheme" content="light" />
     <meta
       name="description"
       content="PillarFortune: grounded conversational tarot. A verifiable seeded draw engine, a schema-constrained LLM interpreter with card-reference validation, bounded retries and fallbacks, and a trained question router."
@@ -13,9 +13,14 @@
     <meta property="og:description" content="Deterministic card draws, a validated LLM interpreter, and every step of the pipeline open for inspection." />
     <meta property="og:type" content="website" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <!-- Chinese serif for 八字 and card names. Loaded without blocking render: where Google Fonts is
+         unreachable the page falls back to Songti / Noto Serif CJK immediately. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&display=swap" media="print" onload="this.media='all'" />
     <title>PillarFortune · Grounded conversational tarot</title>
-    <script type="module" crossorigin src="/PillarFortune/assets/index-BtSHiV9i.js"></script>
-    <link rel="stylesheet" crossorigin href="/PillarFortune/assets/index-C66OUT9F.css">
+    <script type="module" crossorigin src="/PillarFortune/assets/index-D8nYIQIW.js"></script>
+    <link rel="stylesheet" crossorigin href="/PillarFortune/assets/index-UolVOWBz.css">
   </head>
   <body>
     <noscript>PillarFortune needs JavaScript to shuffle the deck.</noscript>
