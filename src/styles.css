@@ -15,7 +15,7 @@
   --font-sans: var(--font-serif);
 
   /* Night sky and velvet */
-  --color-night: #0a0f1f;
+  --color-night: #05080f;
   --color-night-2: #111a30;
   --color-night-3: #18233f;
   /* Parchment text (≥ 4.5:1 on every night surface) */
@@ -92,7 +92,7 @@
     font-size: 1.0625rem;
     line-height: 1.6;
     color: var(--color-star);
-    background: radial-gradient(130% 95% at 50% -12%, #1c3066 0%, #0d1838 38%, #070c1f 72%, #04070f 100%) fixed, var(--color-night);
+    background: radial-gradient(120% 80% at 50% -15%, #0f1b3c 0%, #070d22 40%, #03060f 75%, #010207 100%) fixed, #03050c;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     font-kerning: normal;
@@ -235,6 +235,14 @@
   }
   .btn-primary:active:not(:disabled) {
     transform: translateY(1px);
+  }
+  .btn-primary:disabled {
+    opacity: 1;
+    color: var(--color-star-2);
+    background: #0a0f1d;
+    border-color: rgb(214 179 112 / 0.45);
+    box-shadow: none;
+    cursor: not-allowed;
   }
   .btn-primary:hover:not(:disabled) {
     filter: brightness(1.07);

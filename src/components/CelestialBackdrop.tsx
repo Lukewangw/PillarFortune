@@ -12,11 +12,11 @@ export function CelestialBackdrop() {
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       <StarCanvas />
-      <div className="absolute left-1/2 top-[-26vmin] w-[min(1300px,155vmin)] -translate-x-1/2 opacity-[0.2]">
+      <div className="absolute left-1/2 top-[-26vmin] w-[min(1300px,155vmin)] -translate-x-1/2 opacity-[0.13]">
         <ZodiacWheel className="w-full animate-orbit" />
       </div>
       <Constellations />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_30%,transparent_55%,rgb(2_4_12_/_0.55)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_30%,transparent_40%,rgb(1_2_8_/_0.8)_100%)]" />
     </div>
   );
 }
@@ -102,8 +102,8 @@ function StarCanvas() {
         return {
           x: Math.random() * w,
           y: Math.random() * h,
-          r: bright ? rand(1.0, 1.7) : rand(0.3, 1.0),
-          a: bright ? rand(0.75, 1) : rand(0.25, 0.75),
+          r: bright ? rand(0.9, 1.4) : rand(0.25, 0.85),
+          a: bright ? rand(0.55, 0.8) : rand(0.15, 0.5),
           twinkle: Math.random() < 0.45 ? rand(0.6, 1.8) : 0,
           phase: Math.random() * Math.PI * 2,
           color: pick < 0.72 ? "255 247 228" : pick < 0.9 ? "210 226 255" : "243 222 168",
@@ -119,24 +119,24 @@ function StarCanvas() {
       ctx.globalCompositeOperation = "lighter";
       const tint = warm ? "255 226 160" : "220 232 255";
       const halo = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 1.3);
-      halo.addColorStop(0, `rgb(255 250 235 / ${0.9 * k})`);
-      halo.addColorStop(0.25, `rgb(${tint} / ${0.45 * k})`);
+      halo.addColorStop(0, `rgb(255 250 235 / ${0.45 * k})`);
+      halo.addColorStop(0.25, `rgb(${tint} / ${0.18 * k})`);
       halo.addColorStop(1, `rgb(${tint} / 0)`);
       ctx.fillStyle = halo;
       ctx.beginPath();
       ctx.arc(0, 0, size * 1.3, 0, Math.PI * 2);
       ctx.fill();
       for (const [len, width, rot] of [
-        [size * 3, 1.6, 0],
-        [size * 3, 1.6, Math.PI / 2],
-        [size * 1.4, 0.9, Math.PI / 4],
-        [size * 1.4, 0.9, -Math.PI / 4],
+        [size * 2.4, 1.1, 0],
+        [size * 2.4, 1.1, Math.PI / 2],
+        [size * 1.1, 0.6, Math.PI / 4],
+        [size * 1.1, 0.6, -Math.PI / 4],
       ] as const) {
         ctx.save();
         ctx.rotate(rot);
         const grad = ctx.createLinearGradient(-len, 0, len, 0);
         grad.addColorStop(0, `rgb(${tint} / 0)`);
-        grad.addColorStop(0.5, `rgb(255 252 240 / ${k})`);
+        grad.addColorStop(0.5, `rgb(255 250 232 / ${0.6 * k})`);
         grad.addColorStop(1, `rgb(${tint} / 0)`);
         ctx.strokeStyle = grad;
         ctx.lineWidth = width;
@@ -166,17 +166,17 @@ function StarCanvas() {
       ctx.globalCompositeOperation = "lighter";
       const grad = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
       grad.addColorStop(0, "rgb(240 220 170 / 0)");
-      grad.addColorStop(0.7, `rgb(250 236 200 / ${0.45 * fade})`);
-      grad.addColorStop(1, `rgb(255 252 240 / ${fade})`);
+      grad.addColorStop(0.7, `rgb(250 236 200 / ${0.3 * fade})`);
+      grad.addColorStop(1, `rgb(255 250 235 / ${0.7 * fade})`);
       ctx.strokeStyle = grad;
       ctx.lineCap = "round";
-      ctx.lineWidth = 2.2;
+      ctx.lineWidth = 1.6;
       ctx.beginPath();
       ctx.moveTo(tail.x, tail.y);
       ctx.lineTo(head.x, head.y);
       ctx.stroke();
       ctx.restore();
-      flare(head.x, head.y, 5, fade, 0, true);
+      flare(head.x, head.y, 4, fade * 0.7, 0, true);
     };
 
     const draw = (t: number) => {
@@ -193,7 +193,7 @@ function StarCanvas() {
         const p = (t - d.start) / d.life;
         if (p < 0 || p > 1) continue;
         const k = 1 - p;
-        flare(d.x + d.vx * p * 40, d.y + d.vy * p * 40, d.size * k, k * 0.9, p * 2, true);
+        flare(d.x + d.vx * p * 40, d.y + d.vy * p * 40, d.size * k, k * 0.45, p * 2, true);
       }
       for (const g of glints) drawGlint(g, t);
       for (const m of meteors) drawMeteor(m, t);
@@ -204,20 +204,20 @@ function StarCanvas() {
       if (t - last < 30) return;
       last = t;
       if (t >= nextBurst) {
-        const n = 2 + Math.floor(Math.random() * 5);
+        const n = 1 + Math.floor(Math.random() * 4);
         for (let i = 0; i < n; i++) {
-          const big = Math.random() < 0.18;
+          const big = Math.random() < 0.1;
           glints.push({
             x: rand(0.02, 0.98) * w,
             y: rand(0.02, 0.95) * h,
-            size: big ? rand(16, 24) : rand(7, 13),
+            size: big ? rand(11, 15) : rand(5, 9),
             start: t + rand(0, 700),
             life: rand(900, 1600),
             tilt: rand(-0.4, 0.4),
             warm: Math.random() < 0.7,
           });
         }
-        nextBurst = t + rand(900, 2400);
+        nextBurst = t + rand(1200, 3000);
       }
       glints = glints.filter((g) => t - g.start < g.life);
       if (t >= nextMeteor) {
@@ -246,7 +246,7 @@ function StarCanvas() {
       if (lastPointer && Math.hypot(e.clientX - lastPointer.x, e.clientY - lastPointer.y) < 14 && t - lastPointer.t < 60) return;
       lastPointer = { x: e.clientX, y: e.clientY, t };
       if (dust.length > 90) dust.shift();
-      dust.push({ x: e.clientX + rand(-6, 6), y: e.clientY + rand(-6, 6), vx: rand(-0.4, 0.4), vy: rand(0.2, 0.9), size: rand(2.5, 5.5), start: t, life: rand(700, 1100) });
+      dust.push({ x: e.clientX + rand(-6, 6), y: e.clientY + rand(-6, 6), vx: rand(-0.4, 0.4), vy: rand(0.2, 0.9), size: rand(1.75, 3.85), start: t, life: rand(700, 1100) });
     };
 
     const onVisibility = () => {
