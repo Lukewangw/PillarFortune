@@ -145,9 +145,10 @@ export function AskStep(props: {
           </div>
         )}
 
-        <fieldset className="mt-12 text-center">
-          <legend className="divider label mb-5 w-full">Focus</legend>
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
+        <fieldset className="mt-9 min-w-0 text-center sm:mt-12">
+          <legend className="divider label mb-3 w-full sm:mb-5">Focus</legend>
+          {/* Phones: one swipeable row. Desktop: a centred, wrapping line. */}
+          <div className="-mx-4 flex snap-x scroll-px-9 gap-x-6 overflow-x-auto px-9 pb-1 [mask-image:linear-gradient(90deg,transparent,#000_1.25rem,#000_calc(100%-1.25rem),transparent)] [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:justify-center sm:gap-y-3 sm:overflow-visible sm:px-0 sm:pb-0 sm:[mask-image:none] [&::-webkit-scrollbar]:hidden">
             {(["auto", "career", "love", "finance", "growth", "general"] as const).map((option) => {
               const active = focus === option;
               return (
@@ -156,19 +157,19 @@ export function AskStep(props: {
                   type="button"
                   onClick={() => setFocus(option)}
                   aria-pressed={active}
-                  className={`relative text-[1.05rem] transition-colors ${active ? "text-gold-2" : "text-star-3 hover:text-star"}`}
+                  className={`relative shrink-0 snap-start whitespace-nowrap py-2.5 text-[1.02rem] transition-colors sm:py-0 sm:text-[1.05rem] ${active ? "text-gold-2" : "text-star-3 hover:text-star"}`}
                 >
                   {option === "auto" ? "Detect automatically" : FOCUS_LABEL[option]}
-                  {active && <span className="absolute -bottom-2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rotate-45 bg-gold" aria-hidden="true" />}
+                  {active && <span className="absolute bottom-0 left-1/2 sm:-bottom-2 h-1.5 w-1.5 -translate-x-1/2 rotate-45 bg-gold" aria-hidden="true" />}
                 </button>
               );
             })}
           </div>
         </fieldset>
 
-        <fieldset className="mt-12">
-          <legend className="divider label mb-5 w-full">Spread</legend>
-          <div className="grid gap-3 sm:grid-cols-3">
+        <fieldset className="mt-9 min-w-0 sm:mt-12">
+          <legend className="divider label mb-3 w-full sm:mb-5">Spread</legend>
+          <div className="grid grid-cols-3 gap-1 sm:gap-3">
             {SPREAD_IDS.map((id) => {
               const def = SPREADS[id];
               const active = spread === id;
@@ -178,7 +179,7 @@ export function AskStep(props: {
                   type="button"
                   onClick={() => setSpread(id)}
                   aria-pressed={active}
-                  className="group relative flex flex-col items-center px-4 pb-4 pt-5 text-center"
+                  className="group relative flex flex-col items-center px-1 pb-2 pt-3 text-center sm:px-4 sm:pb-4 sm:pt-5"
                 >
                   <span
                     className={`pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(closest-side,rgb(214_179_112_/_0.2),transparent)] transition-opacity duration-500 ${
@@ -186,23 +187,25 @@ export function AskStep(props: {
                     }`}
                     aria-hidden="true"
                   />
-                  <span className="relative flex h-[4.4rem] items-center justify-center transition-transform duration-300 group-hover:-translate-y-1">
+                  <span className="relative flex h-[4.4rem] origin-bottom scale-[0.8] items-center justify-center transition-transform duration-300 group-hover:-translate-y-1 sm:scale-100">
                     <SpreadDiagram spread={id} active={active} />
                   </span>
-                  <span className={`inscription relative mt-3 block text-[0.95rem] transition-colors ${active ? "!text-gold-2" : "group-hover:!text-gold-2"}`}>{def.name}</span>
-                  <span className="relative mt-1.5 block max-w-[15rem] text-[0.88rem] leading-snug text-star-3">{def.tagline}</span>
+                  <span className={`inscription relative mt-1 block text-[0.72rem] leading-snug sm:mt-3 sm:text-[0.95rem] transition-colors ${active ? "!text-gold-2" : "group-hover:!text-gold-2"}`}>{def.name}</span>
+                  <span className="relative mt-1.5 hidden max-w-[15rem] sm:block text-[0.88rem] leading-snug text-star-3">{def.tagline}</span>
                   <span
-                    className={`relative mt-3 block h-1.5 w-1.5 rotate-45 bg-gold transition-opacity ${active ? "opacity-100" : "opacity-0"}`}
+                    className={`relative mt-2 block h-1.5 w-1.5 rotate-45 sm:mt-3 bg-gold transition-opacity ${active ? "opacity-100" : "opacity-0"}`}
                     aria-hidden="true"
                   />
                 </button>
               );
             })}
           </div>
+          <p className="mt-2 text-center text-[0.92rem] leading-snug text-star-3 sm:hidden">{SPREADS[spread].tagline}</p>
         </fieldset>
 
-        <div className="mt-12 flex flex-col items-center gap-3">
-          <button type="submit" className="btn btn-primary !min-h-[3.75rem] !gap-3 !px-14 !text-[0.95rem] !tracking-[0.2em] [&_svg]:!h-[1.15rem] [&_svg]:!w-[1.15rem] sm:!min-h-[5rem] sm:!gap-4 sm:!px-24 sm:!text-[1.3rem] sm:!tracking-[0.22em] sm:[&_svg]:!h-[1.6rem] sm:[&_svg]:!w-[1.6rem]">
+        {/* Phones: the call to action stays in reach at the bottom of the screen while the form scrolls. */}
+        <div className="sticky bottom-0 z-20 mt-8 flex flex-col items-center gap-2 pb-4 [text-shadow:0_1px_6px_#03050c] sm:static sm:mt-12 sm:gap-3 sm:pb-0 sm:[text-shadow:none]">
+          <button type="submit" className="btn btn-primary w-full sm:w-auto !min-h-[3.75rem] !gap-3 !px-14 !text-[0.95rem] !tracking-[0.2em] [&_svg]:!h-[1.15rem] [&_svg]:!w-[1.15rem] sm:!min-h-[5rem] sm:!gap-4 sm:!px-24 sm:!text-[1.3rem] sm:!tracking-[0.22em] sm:[&_svg]:!h-[1.6rem] sm:[&_svg]:!w-[1.6rem]">
             Shuffle the deck <ArrowRight className="nudge" />
           </button>
           <span className={`text-[0.88rem] transition-colors ${!valid && nudged ? "text-gold-2" : "text-star-3"}`} aria-live="polite">

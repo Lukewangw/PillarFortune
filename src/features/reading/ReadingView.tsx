@@ -82,7 +82,7 @@ export function ReadingView({
         </div>
       </figure>
 
-      <dl className="mt-6 flex flex-wrap items-end justify-center gap-x-10 gap-y-4 text-center">
+      <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 text-center sm:flex sm:flex-wrap sm:items-end sm:justify-center sm:gap-x-10 sm:gap-y-4">
         <div>
           <dt className="label">Focus</dt>
           <dd className="mt-1 text-[1rem]">
@@ -116,7 +116,7 @@ export function ReadingView({
           </div>
         )}
         {hasTrace && (
-          <div>
+          <div className="col-span-2">
             <button type="button" onClick={onInspect} className="btn btn-secondary">
               Inspect pipeline <ArrowRight className="nudge" />
             </button>

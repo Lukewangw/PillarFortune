@@ -83,7 +83,7 @@ export function DeckStep({
 
   // Arc geometry: card centres sit on a circle of radius R around a pivot below the container.
   const narrow = width < 640;
-  const cardW = narrow ? 44 : 64;
+  const cardW = narrow ? 50 : 64;
   const cardH = cardW * (513 / 286);
   const maxAngle = (36 * Math.PI) / 180;
   const R = Math.max(160, (width - cardW - 24) / (2 * Math.sin(maxAngle)));
@@ -175,7 +175,7 @@ export function DeckStep({
                   } as React.CSSProperties
                 }
               >
-                <span className="block h-full w-full transition-transform duration-200 group-enabled:group-hover:[transform:translateY(var(--lift))] group-enabled:group-focus-visible:[transform:translateY(var(--lift))] group-enabled:group-hover:[filter:drop-shadow(0_0_10px_rgb(240_220_170_/_0.75))]">
+                <span className="block h-full w-full transition-transform duration-200 group-enabled:group-hover:[transform:translateY(var(--lift))] group-enabled:group-active:[transform:translateY(var(--lift))] group-enabled:group-focus-visible:[transform:translateY(var(--lift))] group-enabled:group-hover:[filter:drop-shadow(0_0_10px_rgb(240_220_170_/_0.75))]">
                   <CardBack className={`h-full w-full ${CARD_SHADOW}`} />
                 </span>
               </button>
@@ -190,7 +190,7 @@ export function DeckStep({
             <button type="button" onClick={onPickForMe} className="btn btn-secondary">
               Draw for me
             </button>
-            <p className="text-sm text-star-3">Or pick the cards that call to you — each pick fills the next position.</p>
+            <p className="text-center text-sm text-star-3">Or pick the cards that call to you — each pick fills the next position.</p>
           </>
         )}
         {complete && (
