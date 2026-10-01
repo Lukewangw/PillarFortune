@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Focus } from "../../core/llm/types";
 import { QUESTION_LIMITS } from "../../core/orchestrate";
 import type { QuestionRouter, RouteResult } from "../../core/router/router";
@@ -56,6 +56,8 @@ export function AskStep(props: {
   const route = useRoute(question);
   const trimmed = question.trim();
   const valid = trimmed.length >= QUESTION_LIMITS.min && trimmed.length <= QUESTION_LIMITS.max;
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [nudged, setNudged] = useState(false);
 
   return (
     <section className="mx-auto max-w-5xl px-4 pb-16 pt-6 sm:px-6 sm:pt-8">
@@ -77,7 +79,10 @@ export function AskStep(props: {
         className="mx-auto mt-10 max-w-3xl"
         onSubmit={(e) => {
           e.preventDefault();
-          if (valid) onContinue();
+          if (valid) return onContinue();
+          // Never a dead button: point the user back to the question instead.
+          setNudged(true);
+          inputRef.current?.focus();
         }}
       >
         <div className="group relative">
@@ -86,6 +91,7 @@ export function AskStep(props: {
           </label>
           <textarea
             id="question"
+            ref={inputRef}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={(e) => {
@@ -196,11 +202,15 @@ export function AskStep(props: {
         </fieldset>
 
         <div className="mt-12 flex flex-col items-center gap-3">
-          <button type="submit" disabled={!valid} className="btn btn-primary !min-h-[3.75rem] !gap-3 !px-14 !text-[0.95rem] !tracking-[0.2em] [&_svg]:!h-[1.15rem] [&_svg]:!w-[1.15rem] sm:!min-h-[5rem] sm:!gap-4 sm:!px-24 sm:!text-[1.3rem] sm:!tracking-[0.22em] sm:[&_svg]:!h-[1.6rem] sm:[&_svg]:!w-[1.6rem]">
+          <button type="submit" className="btn btn-primary !min-h-[3.75rem] !gap-3 !px-14 !text-[0.95rem] !tracking-[0.2em] [&_svg]:!h-[1.15rem] [&_svg]:!w-[1.15rem] sm:!min-h-[5rem] sm:!gap-4 sm:!px-24 sm:!text-[1.3rem] sm:!tracking-[0.22em] sm:[&_svg]:!h-[1.6rem] sm:[&_svg]:!w-[1.6rem]">
             Shuffle the deck <ArrowRight className="nudge" />
           </button>
-          <span className="text-[0.88rem] text-star-3">
-            {!valid && trimmed.length > 0 ? `Please write at least ${QUESTION_LIMITS.min} characters.` : "or press Ctrl / ⌘ + Enter"}
+          <span className={`text-[0.88rem] transition-colors ${!valid && nudged ? "text-gold-2" : "text-star-3"}`} aria-live="polite">
+            {!valid && (nudged || trimmed.length > 0)
+              ? trimmed.length === 0
+                ? "Write your question above first."
+                : `Please write at least ${QUESTION_LIMITS.min} characters.`
+              : <span className="hidden sm:inline">or press Ctrl / ⌘ + Enter</span>}
           </span>
         </div>
       </form>
